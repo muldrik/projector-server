@@ -95,7 +95,6 @@ object ProjectorLauncher {
     }
 
     private fun setupSingletons() {
-      setupGraphicsEnvironment()
       setupToolkit()
       setupFontManager()
       setupRepaintManager()

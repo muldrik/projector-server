@@ -880,11 +880,11 @@ class ProjectorServer private constructor(
     fun startServer(isAgent: Boolean, initializer: Runnable): ProjectorServer {
       loggerFactory = { DelegatingJvmLogger(it) }
 
+      IjInjectorAgentInitializer.init(isAgent)
+
       ProjectorAwtInitializer.initProjectorAwt()
 
       initializer.run()
-
-      IjInjectorAgentInitializer.init(isAgent)
 
       ProjectorAwtInitializer.initDefaults()  // this should be done after setting classes because some headless operations can happen here
 
