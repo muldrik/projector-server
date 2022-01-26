@@ -901,6 +901,10 @@ class ProjectorServer private constructor(
       }
     }
 
+    fun appendToCommonQueue(event: ServerEvent) {
+      lastStartedServer?.apply { commonQueue += event }
+    }
+
     @Suppress("MemberVisibilityCanBePrivate")  // used in CWM
     var lastStartedServer: ProjectorServer? = null
       private set
