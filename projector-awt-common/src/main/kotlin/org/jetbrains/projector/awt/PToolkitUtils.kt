@@ -27,14 +27,14 @@ package org.jetbrains.projector.awt
 
 import sun.awt.AWTAutoShutdown
 
-public object PToolkitUtils {
+object PToolkitUtils {
   private val unregisterPeerMethod = AWTAutoShutdown::class.java.getDeclaredMethod("unregisterPeer", Any::class.java,
                                                                                    Any::class.java).apply {
     isAccessible = true
   }
 
 
-  public fun targetDisposedPeer(target: Any, peer: Any) {
+  fun targetDisposedPeer(target: Any, peer: Any) {
     unregisterPeerMethod.invoke(AWTAutoShutdown.getInstance(), target, peer)
   }
 }

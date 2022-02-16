@@ -28,7 +28,6 @@ package org.jetbrains.projector.awt.peer
 import org.jetbrains.projector.awt.PToolkitUtils
 import org.jetbrains.projector.awt.PWindow
 import org.jetbrains.projector.awt.image.PVolatileImage
-import sun.awt.image.ToolkitImage
 import sun.java2d.pipe.Region
 import java.awt.*
 import java.awt.BufferCapabilities.FlipContents
@@ -37,7 +36,6 @@ import java.awt.dnd.peer.DropTargetPeer
 import java.awt.event.FocusEvent
 import java.awt.event.PaintEvent
 import java.awt.image.ColorModel
-import java.awt.image.ImageProducer
 import java.awt.image.VolatileImage
 import java.awt.peer.ComponentPeer
 import java.awt.peer.ContainerPeer
@@ -70,7 +68,8 @@ abstract class PComponentPeerBase(target: Component, private val isFocusable: Bo
 
   override fun setVisible(v: Boolean) {
     if (v) {
-      pWindow.target.repaint()  // todo: why XToolkit doesn't use this?  // maybe should do smth like dispatchEvent(ComponentEvent.COMPONENT_SHOWN)
+      // todo: why XToolkit doesn't use this?  // maybe should do smth like dispatchEvent(ComponentEvent.COMPONENT_SHOWN)
+      pWindow.target.repaint()
     }
 
     pWindow.target.isVisible = v
