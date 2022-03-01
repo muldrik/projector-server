@@ -31,15 +31,9 @@ publishToSpace()
 val kotlinVersion: String by project
 val projectorClientVersion: String by project
 val projectorClientGroup: String by project
-version = project(":projector-server").version
-
-val jdkDependentProject = if (JavaVersion.current() >= JavaVersion.VERSION_17) {
-  project(":projector-awt-jdk17")
-}else {
-  project(":projector-awt-jdk11")
-}
+version = project(":projector-server-common").version
 
 dependencies {
-  api(jdkDependentProject)
+  api(project(":projector-awt-common"))
   testImplementation(kotlin("test", kotlinVersion))
 }

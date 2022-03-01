@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019-2021, JetBrains s.r.o. and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019-2022, JetBrains s.r.o. and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -21,19 +21,19 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-plugins {
-  kotlin("jvm")
-  `maven-publish`
-}
+package org.jetbrains.projector.server
 
-publishToSpace()
+object ProjectorLauncher : ProjectorLauncherBase() {
 
-val kotlinVersion: String by project
-val projectorClientVersion: String by project
-val projectorClientGroup: String by project
-version = project(":projector-server-common").version
+  @JvmStatic
+  fun main(args: Array<String>) {
+    start(args, PAwtProviderJdk17)
+  }
 
-dependencies {
-  api("$projectorClientGroup:projector-util-logging:$projectorClientVersion")
-  testImplementation(kotlin("test", kotlinVersion))
+  @Suppress("unused") // "invoked from CWM code as the generic launcher can't be used there"
+  @JvmStatic
+  fun runProjectorServer(): Boolean {
+    return runProjectorServer(PAwtProviderJdk17)
+  }
+
 }
