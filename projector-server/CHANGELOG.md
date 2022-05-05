@@ -1,12 +1,28 @@
 # Unreleased
 
 ## Added
+- Allow specifying server logger factory
+- PRJ-496 Allow disabling server integrations with IDE
+- PRJ-472 New artifact with JDK 17 support
+
+## Fixed
+- PRJ-58 Fix Markdown client components couldn't be shrunk
+- PRJ-868 Avoid using HTML plain text injections
+- PRJ-870 Encode URL at 404 page
+- PRJ-872 Avoid opening non-http(s) links
+- Support linear gradient paint (Fixes Nyan Progress Bar, for example)
+
+# 1.7.0
+
+## Added
 - PRJ-127 To-client clipboard synchronization without asynchronous clipboard API for Web client
 
 ## Fixed
 - PRJ-691 PRJ-750 PRJ-779 Fix JetBrains account login
 - Infinite transport initialization on relay failure
 - (partial) PRJ-552 Fix transparent pop-ups in some cases
+- (full) PRJ-62 PRJ-552 Fix incorrect window size in some cases
+- PRJ-565 Fix wrong header position after the window is resized
 
 ## Changed
 - Switch to JS IR compilation for projector-client-web

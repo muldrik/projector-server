@@ -30,6 +30,7 @@ import org.jetbrains.projector.awt.peer.PMouseInfoPeer
 import org.jetbrains.projector.awt.service.DrawEventQueue
 import org.jetbrains.projector.common.protocol.toClient.ServerDrawCommandsEvent
 import org.jetbrains.projector.server.ProjectorServer
+import org.jetbrains.projector.server.core.ij.log.DelegatingJvmLogger
 import org.jetbrains.projector.server.service.ProjectorDrawEventQueue
 import org.jetbrains.projector.server.service.ProjectorFontProvider
 import org.jetbrains.projector.util.loading.UseProjectorLoader
@@ -58,12 +59,13 @@ internal object GraphicsInterceptor {
   private var currentQueue: DrawEventQueue? = null
 
   @Suppress("unused")
-  private val server = ProjectorServer.startServer(isAgent = true) {
+  private val server = ProjectorServer.startServer(
+    isAgent = true, ::DelegatingJvmLogger, {
     // todo: make it work with dynamic agent
     //setupAgentSystemProperties()
     //setupAgentSingletons()
     ProjectorFontProvider.isAgent = true
-  }
+  }, {})
 
   @Suppress("unused", "PLATFORM_CLASS_MAPPED_TO_KOTLIN",
             "UNUSED_PARAMETER")  // Integer is needed because this function is used via reflection
