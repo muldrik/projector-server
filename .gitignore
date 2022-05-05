@@ -9,3 +9,6 @@ build/
 out/
 local.properties
 pluginVersions.txt
+.gitignore
+*.log
+projector-server/stats/

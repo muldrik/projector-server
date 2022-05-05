@@ -51,6 +51,14 @@ import java.awt.image.RenderedImage
 import java.awt.image.renderable.RenderableImage
 import java.text.AttributedCharacterIterator
 import javax.swing.UIManager
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
+
+@Serializable
+data class Kek(val paintType: AwtPaintType, val shape: Shape)
 
 class PGraphics2D private constructor(
   val drawEventQueue: DrawEventQueue,
@@ -182,11 +190,38 @@ class PGraphics2D private constructor(
     )
   }
 
-  override fun draw(s: Shape) {
+  val threshold: Long = 20
+
+  // Create a function wrapper that will call the given function and print "hi"
+  // if the function takes longer than the threshold.
+
+  // Create a function that measures the time of a block of code in millis.
+  // If the time exceedes the given threshold, log a warning.
+  // The function should return whatever the block of code returns.
+  private fun <T> measureTime(name: String, block: () -> T): T {
+    val start = System.currentTimeMillis()
+    val result = block()
+    val end = System.currentTimeMillis()
+    if (end - start > threshold) {
+      println("WARNING: $name took ${end - start} ms")
+    }
+    return result
+  }
+
+  // Create an annotation that wraps the function with measureTime.
+  annotation class Time {
+    companion object {
+      fun <T> measureTime(name: String, block: () -> T): T {
+        return measureTime(name, block)
+      }
+    }
+  }
+
+  override fun draw(s: Shape) = measureTime("DRAW") {
     paintShape(AwtPaintType.DRAW, s)
   }
 
-  override fun drawRenderedImage(img: RenderedImage, xform: AffineTransform?) {
+  override fun drawRenderedImage(img: RenderedImage, xform: AffineTransform?) = measureTime<Unit>( "DRAW_RENDERED_IMAGE") {
     // xform nullability is required for compatibility, so provide a default (identity) transformation
     val xFormOrDefault = xform ?: AffineTransform()
 
@@ -200,23 +235,23 @@ class PGraphics2D private constructor(
     }
   }
 
-  override fun drawRenderableImage(img: RenderableImage, xform: AffineTransform) {
+  override fun drawRenderableImage(img: RenderableImage, xform: AffineTransform) = measureTime("DRAW_RENDERABLE_IMAGE") {
     paintPlain { drawRenderableImage() }
   }
 
-  override fun drawString(str: String, x: Int, y: Int) {
+  override fun drawString(str: String, x: Int, y: Int) = measureTime("DRAW_STRING") {
     paintString(str, x = x.toDouble(), y = y.toDouble())
   }
 
-  override fun drawString(str: String, x: Float, y: Float) {
+  override fun drawString(str: String, x: Float, y: Float) = measureTime("DRAW_STRING") {
     paintString(str, x = x.toDouble(), y = y.toDouble())
   }
 
-  override fun drawString(iterator: AttributedCharacterIterator, x: Int, y: Int) {
+  override fun drawString(iterator: AttributedCharacterIterator, x: Int, y: Int)  {
     drawString(iterator, x = x.toFloat(), y = y.toFloat())
   }
 
-  override fun drawString(iterator: AttributedCharacterIterator, x: Float, y: Float) {
+  override fun drawString(iterator: AttributedCharacterIterator, x: Float, y: Float) = measureTime("DRAW_STRING") {
     if (iterator.beginIndex != iterator.endIndex) {
       val tl = TextLayout(iterator, this.backingFontRenderContext)
       tl.draw(this, x, y)
@@ -228,7 +263,7 @@ class PGraphics2D private constructor(
     fill(shape)
   }
 
-  private fun paintShape(paintType: AwtPaintType, shape: Shape) {
+  private fun paintShape(paintType: AwtPaintType, shape: Shape) = measureTime("PAINT_SHAPE") {
     when (shape) {
       is Rectangle2D -> addPaintRectCommand(paintType, shape.x, shape.y, shape.width, shape.height)
 
@@ -432,25 +467,25 @@ class PGraphics2D private constructor(
     return identitySpaceClip?.untransformShape()?.bounds
   }
 
-  override fun clipRect(x: Int, y: Int, w: Int, h: Int) {
+  override fun clipRect(x: Int, y: Int, w: Int, h: Int) = measureTime("clipRect") {
     clip(Rectangle(x, y, w, h))
   }
 
-  override fun setClip(x: Int, y: Int, w: Int, h: Int) {
+  override fun setClip(x: Int, y: Int, w: Int, h: Int) = measureTime("setClip") {
     clip = Rectangle(x, y, w, h)
   }
 
-  private fun Shape.untransformShape(): Shape {
-    return this.transformShape(transform.createInverse())
+  private fun Shape.untransformShape(): Shape = measureTime("untransformShape") {
+    this.transformShape(transform.createInverse())
   }
 
-  override fun getClip(): Shape? {
+  override fun getClip(): Shape? = measureTime("getClip") {
     try {
-      return identitySpaceClip?.untransformShape()
+      identitySpaceClip?.untransformShape()
     }
     catch (e: NoninvertibleTransformException) {
       logger.error(e) { "Can't return clip because it's noninvertible" }
-      return null
+      null
     }
   }
 
@@ -494,7 +529,7 @@ class PGraphics2D private constructor(
     identitySpaceClip = identitySpaceShape
   }
 
-  override fun copyArea(x: Int, y: Int, width: Int, height: Int, dx: Int, dy: Int) {
+  override fun copyArea(x: Int, y: Int, width: Int, height: Int, dx: Int, dy: Int) = measureTime("copyArea") {
     paintArea {
       copyArea(
         x = x,
@@ -507,7 +542,7 @@ class PGraphics2D private constructor(
     }
   }
 
-  override fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) {
+  override fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) = measureTime("drawLine") {
     paintShape {
       drawLine(
         x1 = x1,
@@ -538,7 +573,7 @@ class PGraphics2D private constructor(
     addPaintRectCommand(AwtPaintType.FILL, x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
   }
 
-  override fun clearRect(x: Int, y: Int, width: Int, height: Int) {
+  override fun clearRect(x: Int, y: Int, width: Int, height: Int) = measureTime("clearRect") {
     val c = composite
     val p = getPaint()
     composite = AlphaComposite.Src
@@ -676,16 +711,16 @@ class PGraphics2D private constructor(
     paintShape { drawPolyline(xPoints.take(nPoints).zip(yPoints.take(nPoints))) }
   }
 
-  private fun paintPolygon(paintType: AwtPaintType, xPoints: IntArray, yPoints: IntArray, nPoints: Int) {
+  private fun paintPolygon(paintType: AwtPaintType, xPoints: IntArray, yPoints: IntArray, nPoints: Int) = measureTime("paintPolygon") {
     if (nPoints <= 0) {
-      return
     }
-
-    paintShape {
-      paintPolygon(
-        paintType = paintType,
-        points = xPoints.take(nPoints).zip(yPoints.take(nPoints))
-      )
+    else {
+      paintShape {
+        paintPolygon(
+          paintType = paintType,
+          points = xPoints.take(nPoints).zip(yPoints.take(nPoints))
+        )
+      }
     }
   }
 
@@ -697,10 +732,10 @@ class PGraphics2D private constructor(
     paintPolygon(AwtPaintType.FILL, xPoints, yPoints, nPoints)
   }
 
-  override fun drawImage(img: Image?, xform: AffineTransform, obs: ImageObserver?): Boolean {
+  override fun drawImage(img: Image?, xform: AffineTransform, obs: ImageObserver?): Boolean = measureTime("drawImage") {
     val info = AwtImageInfo.Transformation(xform.toList())
 
-    return extractImage(img, info, "drawImage(img, xform, obs)")
+    extractImage(img, info, "drawImage(img, xform, obs)")
   }
 
   override fun drawImage(img: BufferedImage?, op: BufferedImageOp, x: Int, y: Int) {
@@ -761,14 +796,15 @@ class PGraphics2D private constructor(
     return extractImage(img, info, "drawImage(img, d..., s..., bgcolor, observer)")
   }
 
-  private fun extractImage(img: Image?, awtImageInfo: AwtImageInfo, methodName: String): Boolean {
+  private fun extractImage(img: Image?, awtImageInfo: AwtImageInfo, methodName: String): Boolean = measureTime<Boolean>(methodName) {
     if (img == null) {
-      return true  // java doc for all image methods: methods just return true if the img is null
+      true  // java doc for all image methods: methods just return true if the img is null
     }
+    else {
+      paintArea { drawImage(imageId = ImageCacher.instance.getImageId(img, methodName), awtImageInfo = awtImageInfo) }
 
-    paintArea { drawImage(imageId = ImageCacher.instance.getImageId(img, methodName), awtImageInfo = awtImageInfo) }
-
-    return true
+      true
+    }
   }
 
   override fun dispose() {
