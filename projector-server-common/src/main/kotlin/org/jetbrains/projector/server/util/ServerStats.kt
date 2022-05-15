@@ -106,11 +106,12 @@ object ServerStats {
   fun setStatsDumpCountdown() = Timer().schedule(60000) {
     CreateUpdateStats.dumpStats()
     MemoryStats.dumpStats()
+    NetworkStats.dumpStats()
   }
 
   object CreateUpdateStats : Stats("Create update loop") {
     val file = File("stats/kek.csv")
-    const val timeThreshold: Long = 25
+    private const val timeThreshold: Long = 25
     private val interestingMeasurements = mutableListOf<TimeMeasurement>()
 
     override fun endMeasurement(): TimeMeasurement = super.endMeasurement().also {
@@ -123,7 +124,7 @@ object ServerStats {
       file.printWriter().use { out ->
         out.println("timestamp,task,len")
         interestingMeasurements.forEach {
-          val timestamp = it.start - globalStartTime
+          val timestamp = it.start
           out.print(it.toCsvString("$timestamp,").removeSuffix(","))
         }
       }
@@ -142,10 +143,9 @@ object ServerStats {
         """.trimIndent()
       }
       fun toCsvString(): String {
-        val relatimeTimestamp = timestamp
         return """
-          ${relatimeTimestamp},Used,${used/1024/1024}
-          ${relatimeTimestamp},Total,${total/1024/1024}
+          ${timestamp},Used,${used/1024/1024}
+          ${timestamp},Total,${total/1024/1024}
           
         """.trimIndent()
       }
@@ -187,7 +187,7 @@ object ServerStats {
     }
 
     val file = File("stats/network.csv")
-    fun dump() = synchronized(packets) {
+    fun dumpStats() = synchronized(packets) {
       file.printWriter().use { out ->
         out.println("timestamp,bytes")
         packets.forEach { out.print(it.toCsvString()) }

@@ -51,14 +51,9 @@ import java.awt.image.RenderedImage
 import java.awt.image.renderable.RenderableImage
 import java.text.AttributedCharacterIterator
 import javax.swing.UIManager
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
 
-@Serializable
-data class Kek(val paintType: AwtPaintType, val shape: Shape)
 
 class PGraphics2D private constructor(
   val drawEventQueue: DrawEventQueue,
