@@ -111,7 +111,7 @@ object ServerStats {
 
   object CreateUpdateStats : Stats("Create update loop") {
     val file = File("stats/kek.csv")
-    private const val timeThreshold: Long = 25
+    private const val timeThreshold: Long = 8
     private val interestingMeasurements = mutableListOf<TimeMeasurement>()
 
     override fun endMeasurement(): TimeMeasurement = super.endMeasurement().also {
