@@ -23,6 +23,7 @@
  */
 package org.jetbrains.projector.server.util
 
+import org.jetbrains.projector.server.util.stats.*
 import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
@@ -32,16 +33,27 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 
-open class Stats(private val blockName: String) {
+open class Stats(val blockName: String) {
   var currentStart: Long = 0
   private val currentMeasurements = mutableListOf<TimeMeasurement>()
+  open val metrics = listOf<Metric>() // Override to include metrics
+
+  fun standaloneSimpleMeasure(name: String, block: () -> Unit) {
+    startMeasurement()
+    simpleMeasure(name, block)
+    endMeasurement()
+  }
+
 
   fun startMeasurement() {
-    currentStart = ServerStats.getCurrentTimestamp()
+    currentStart = ServerStats.getTimestampFromStart()
   }
 
   open fun endMeasurement(): TimeMeasurement {
-    val end = ServerStats.getCurrentTimestamp()
+    val end = ServerStats.getTimestampFromStart()
+    for (metric in metrics) { // Default behavior. Override to include submeasurements
+      metric.add(end - currentStart)
+    }
     return RecMeasurement(blockName, currentStart, end, currentMeasurements.toList()).also { currentMeasurements.clear() }
   }
 
@@ -52,9 +64,9 @@ open class Stats(private val blockName: String) {
   @OptIn(ExperimentalContracts::class)
   fun simpleMeasure(name: String, block: () -> Unit) {
     contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
-    val start = ServerStats.getCurrentTimestamp()
+    val start = ServerStats.getTimestampFromStart()
     block()
-    val end = ServerStats.getCurrentTimestamp()
+    val end = ServerStats.getTimestampFromStart()
     currentMeasurements.add(SimpleMeasurement(name, start, end))
   }
 }
@@ -101,40 +113,68 @@ val EmptyMeasurement = SimpleMeasurement("Empty", 0, 0)
 
 object ServerStats {
   val globalStartTime = System.currentTimeMillis()
-  fun getCurrentTimestamp() = System.currentTimeMillis() - globalStartTime
+  fun getTimestampFromStart() = System.currentTimeMillis() - globalStartTime
 
   fun setStatsDumpCountdown() = Timer().schedule(60000) {
+    println("Dumping the stats")
     CreateUpdateStats.dumpStats()
     MemoryStats.dumpStats()
     NetworkStats.dumpStats()
+    AwtStats.dumpStats()
   }
 
   object CreateUpdateStats : Stats("Create update loop") {
-    val file = File("stats/kek.csv")
+    override val metrics = listOf(
+      Average(blockName),
+      TimeRate(blockName),
+      PeakRate(blockName, 3),
+      PeakRate(blockName, 5),
+      PeakRate(blockName, 10),
+      PeakRate(blockName, 20),
+      PowerPunishingRate(blockName, 3, 1.2),
+      PowerPunishingRate(blockName, 5, 1.2),
+      PowerPunishingRate(blockName, 3, 1.5),
+      PowerPunishingRate(blockName, 5, 1.5),
+      PowerPunishingRate(blockName, 3, 2.0),
+      PowerPunishingRate(blockName, 5, 2.0)
+    )
+
     private const val timeThreshold: Long = 8
     private val interestingMeasurements = mutableListOf<TimeMeasurement>()
-
     override fun endMeasurement(): TimeMeasurement = super.endMeasurement().also {
       if (it.end - it.start > timeThreshold)
         synchronized(interestingMeasurements) { interestingMeasurements.add(it) }
     }
 
-    fun dumpStats() = synchronized(interestingMeasurements) {
-      println("Dumping to ${file.absolutePath}")
-      file.printWriter().use { out ->
-        out.println("timestamp,task,len")
-        interestingMeasurements.forEach {
-          val timestamp = it.start
-          out.print(it.toCsvString("$timestamp,").removeSuffix(","))
+    private val csvFile = File("stats/createUpdateTime.csv")
+    private val metricsFile = File("stats/createUpdateTime.txt")
+    fun dumpStats() {
+
+      metricsFile.printWriter().use { out ->
+        out.println("Time stats:")
+        for (metric in metrics) {
+          out.println("${metric.name} ${metric.dumpResult()}")
+        }
+      }
+
+
+      synchronized(interestingMeasurements) {
+        csvFile.printWriter().use { out ->
+          out.println("timestamp,task,len")
+          interestingMeasurements.forEach {
+            val timestamp = it.start
+            out.print(it.toCsvString("$timestamp,").removeSuffix(","))
+          }
         }
       }
     }
-
   }
+  val CreateDataStats = Stats("Create data to send")
 
-  object CreateDataStats : Stats("Create data to send")
 
   object MemoryStats {
+    val average = Average("Memory usage")
+
     data class MemoryUsage(val timestamp: Long, val total: Long, val used: Long) {
       override fun toString(): String {
         return """
@@ -156,15 +196,21 @@ object ServerStats {
     fun startMemoryStatsCollector() = timer("Used memory checker", true, 0, 1000) {
       val totalMemory = Runtime.getRuntime().totalMemory()
       val usedMemory = totalMemory - Runtime.getRuntime().freeMemory()
-      val timeNow = getCurrentTimestamp()
+      val timeNow = getTimestampFromStart()
       synchronized(usages) {
         usages.add(MemoryUsage(timeNow, totalMemory, usedMemory))
+        average.add(usedMemory)
       }
     }
 
-    val file = File("stats/memory.csv")
+    val metricsFile = File("stats/memory.txt")
+    val csvFile = File("stats/memory.csv")
     fun dumpStats() = synchronized(usages) {
-      file.printWriter().use { out ->
+      metricsFile.printWriter().use { out ->
+        out.println(average.dumpResult())
+      }
+
+      csvFile.printWriter().use { out ->
         out.println("timestamp,type,value")
         usages.forEach {
           out.print(it.toCsvString())
@@ -174,6 +220,8 @@ object ServerStats {
   }
 
   object NetworkStats {
+    val average = Average("Network usage")
+
     data class SentPacket(val timestamp: Long, val byteSize: Long) {
       fun toCsvString(): String {
         return "${timestamp},$byteSize\n"
@@ -186,15 +234,52 @@ object ServerStats {
       packets.add(SentPacket(timestamp, byteSize))
     }
 
-    val file = File("stats/network.csv")
+    val metricsFile = File("stats/network.txt")
+    val csvFile = File("stats/network.csv")
     fun dumpStats() = synchronized(packets) {
-      file.printWriter().use { out ->
+      metricsFile.printWriter().use { out ->
+        out.println("Average in network usage (Kb/s): ${average.result() / 1024}")
+      }
+
+      csvFile.printWriter().use { out ->
         out.println("timestamp,bytes")
         packets.forEach { out.print(it.toCsvString()) }
       }
     }
   }
+
+  object AwtStats: Stats("Awt processing") {
+    override val metrics: List<Metric> = listOf(
+      Average(blockName),
+      TimeRate(blockName),
+      PeakRate(blockName, 3),
+      PeakRate(blockName, 5),
+      PeakRate(blockName, 10),
+      PeakRate(blockName, 20),
+      PowerPunishingRate(blockName, 3, 1.2),
+      PowerPunishingRate(blockName, 5, 1.2),
+      PowerPunishingRate(blockName, 3, 1.5),
+      PowerPunishingRate(blockName, 5, 1.5),
+      PowerPunishingRate(blockName, 3, 2.0),
+      PowerPunishingRate(blockName, 5, 2.0)
+    )
+
+    private val metricsFile = File("stats/createUpdateTime.txt")
+
+    fun dumpStats() {
+      metricsFile.printWriter().use { out ->
+        out.println("Time stats:")
+        for (metric in CreateUpdateStats.metrics) {
+          out.println("${metric.name} ${metric.dumpResult()}")
+        }
+      }
+    }
+  }
 }
+
+
+
+
 
 /*
 

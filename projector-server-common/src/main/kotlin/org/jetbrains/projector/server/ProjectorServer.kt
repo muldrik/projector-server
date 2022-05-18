@@ -716,7 +716,7 @@ class ProjectorServer private constructor(
           val encoded = toClientMessageEncoder.encode(message)
           toClientMessageCompressor.compress(encoded)
         }
-        ServerStats.NetworkStats.add(ServerStats.getCurrentTimestamp(), compressed.size.toLong());
+        ServerStats.NetworkStats.add(ServerStats.getTimestampFromStart(), compressed.size.toLong());
         client.send(compressed)
       }
     }
