@@ -32,6 +32,8 @@ import org.jetbrains.projector.awt.font.PFontManager
 import org.jetbrains.projector.awt.service.Defaults
 import org.jetbrains.projector.awt.service.DrawEventQueue
 import org.jetbrains.projector.awt.service.ImageCacher
+import org.jetbrains.projector.awt.stats.AwtStats
+import org.jetbrains.projector.awt.stats.ServerStats
 import org.jetbrains.projector.util.logging.Logger
 import sun.font.FontDesignMetrics
 import sun.java2d.NullSurfaceData
@@ -85,11 +87,11 @@ class PGraphics2D private constructor(
       return field
     }
 
-  private inline fun paintPlain(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) {
+  private inline fun paintPlain(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) = AwtStats.standaloneSimpleMeasure("Paint plain") {
     drawEventQueue.buildCommand().command()
   }
 
-  private inline fun paintShape(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) {
+  private inline fun paintShape(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) = AwtStats.standaloneSimpleMeasure("Paint shape") {
     drawEventQueue
       .buildCommand()
       .setClip(identitySpaceClip = identitySpaceClip)
@@ -100,7 +102,7 @@ class PGraphics2D private constructor(
       .command()
   }
 
-  private inline fun paintArea(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) {
+  private inline fun paintArea(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) = AwtStats.standaloneSimpleMeasure("Paint area") {
     drawEventQueue
       .buildCommand()
       .setClip(identitySpaceClip = identitySpaceClip)
@@ -109,9 +111,9 @@ class PGraphics2D private constructor(
       .command()
   }
 
-  private fun paintString(str: String, x: Double, y: Double) {
+  private fun paintString(str: String, x: Double, y: Double) = AwtStats.standaloneSimpleMeasure("Paint string") {
     if (str.isBlank()) {
-      return
+      return@standaloneSimpleMeasure
     }
 
     val metrics = FontDesignMetrics.getMetrics(font, backingFontRenderContext)
@@ -185,34 +187,9 @@ class PGraphics2D private constructor(
     )
   }
 
-  val threshold: Long = 20
 
-  // Create a function wrapper that will call the given function and print "hi"
-  // if the function takes longer than the threshold.
 
-  // Create a function that measures the time of a block of code in millis.
-  // If the time exceedes the given threshold, log a warning.
-  // The function should return whatever the block of code returns.
-  private fun <T> measureTime(name: String, block: () -> T): T {
-    val start = System.currentTimeMillis()
-    val result = block()
-    val end = System.currentTimeMillis()
-    if (end - start > threshold) {
-      println("WARNING: $name took ${end - start} ms")
-    }
-    return result
-  }
-
-  // Create an annotation that wraps the function with measureTime.
-  annotation class Time {
-    companion object {
-      fun <T> measureTime(name: String, block: () -> T): T {
-        return measureTime(name, block)
-      }
-    }
-  }
-
-  override fun draw(s: Shape) = measureTime("DRAW") {
+  override fun draw(s: Shape) {
     paintShape(AwtPaintType.DRAW, s)
   }
 
@@ -230,15 +207,15 @@ class PGraphics2D private constructor(
     }
   }
 
-  override fun drawRenderableImage(img: RenderableImage, xform: AffineTransform) = measureTime("DRAW_RENDERABLE_IMAGE") {
+  override fun drawRenderableImage(img: RenderableImage, xform: AffineTransform) {
     paintPlain { drawRenderableImage() }
   }
 
-  override fun drawString(str: String, x: Int, y: Int) = measureTime("DRAW_STRING") {
+  override fun drawString(str: String, x: Int, y: Int) {
     paintString(str, x = x.toDouble(), y = y.toDouble())
   }
 
-  override fun drawString(str: String, x: Float, y: Float) = measureTime("DRAW_STRING") {
+  override fun drawString(str: String, x: Float, y: Float) {
     paintString(str, x = x.toDouble(), y = y.toDouble())
   }
 
@@ -246,19 +223,19 @@ class PGraphics2D private constructor(
     drawString(iterator, x = x.toFloat(), y = y.toFloat())
   }
 
-  override fun drawString(iterator: AttributedCharacterIterator, x: Float, y: Float) = measureTime("DRAW_STRING") {
+  override fun drawString(iterator: AttributedCharacterIterator, x: Float, y: Float) {
     if (iterator.beginIndex != iterator.endIndex) {
       val tl = TextLayout(iterator, this.backingFontRenderContext)
       tl.draw(this, x, y)
     }
   }
 
-  override fun drawGlyphVector(g: GlyphVector, x: Float, y: Float) {
+  override fun drawGlyphVector(g: GlyphVector, x: Float, y: Float) = AwtStats.standaloneSimpleMeasure("drawGlyphVector") {
     val shape = g.getOutline(x, y)
     fill(shape)
   }
 
-  private fun paintShape(paintType: AwtPaintType, shape: Shape) = measureTime("PAINT_SHAPE") {
+  private fun paintShape(paintType: AwtPaintType, shape: Shape) = AwtStats.standaloneSimpleMeasure("Paint shape") {
     when (shape) {
       is Rectangle2D -> addPaintRectCommand(paintType, shape.x, shape.y, shape.width, shape.height)
 
@@ -462,25 +439,25 @@ class PGraphics2D private constructor(
     return identitySpaceClip?.untransformShape()?.bounds
   }
 
-  override fun clipRect(x: Int, y: Int, w: Int, h: Int) = measureTime("clipRect") {
+  override fun clipRect(x: Int, y: Int, w: Int, h: Int) {
     clip(Rectangle(x, y, w, h))
   }
 
-  override fun setClip(x: Int, y: Int, w: Int, h: Int) = measureTime("setClip") {
+  override fun setClip(x: Int, y: Int, w: Int, h: Int) {
     clip = Rectangle(x, y, w, h)
   }
 
-  private fun Shape.untransformShape(): Shape = measureTime("untransformShape") {
-    this.transformShape(transform.createInverse())
+  private fun Shape.untransformShape(): Shape  {
+    return this.transformShape(transform.createInverse())
   }
 
-  override fun getClip(): Shape? = measureTime("getClip") {
+  override fun getClip(): Shape? {
     try {
-      identitySpaceClip?.untransformShape()
+      return identitySpaceClip?.untransformShape()
     }
     catch (e: NoninvertibleTransformException) {
       logger.error(e) { "Can't return clip because it's noninvertible" }
-      null
+      return null
     }
   }
 
@@ -524,7 +501,7 @@ class PGraphics2D private constructor(
     identitySpaceClip = identitySpaceShape
   }
 
-  override fun copyArea(x: Int, y: Int, width: Int, height: Int, dx: Int, dy: Int) = measureTime("copyArea") {
+  override fun copyArea(x: Int, y: Int, width: Int, height: Int, dx: Int, dy: Int) {
     paintArea {
       copyArea(
         x = x,
@@ -537,7 +514,7 @@ class PGraphics2D private constructor(
     }
   }
 
-  override fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) = measureTime("drawLine") {
+  override fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) {
     paintShape {
       drawLine(
         x1 = x1,
@@ -568,7 +545,7 @@ class PGraphics2D private constructor(
     addPaintRectCommand(AwtPaintType.FILL, x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
   }
 
-  override fun clearRect(x: Int, y: Int, width: Int, height: Int) = measureTime("clearRect") {
+  override fun clearRect(x: Int, y: Int, width: Int, height: Int) {
     val c = composite
     val p = getPaint()
     composite = AlphaComposite.Src
@@ -706,7 +683,7 @@ class PGraphics2D private constructor(
     paintShape { drawPolyline(xPoints.take(nPoints).zip(yPoints.take(nPoints))) }
   }
 
-  private fun paintPolygon(paintType: AwtPaintType, xPoints: IntArray, yPoints: IntArray, nPoints: Int) = measureTime("paintPolygon") {
+  private fun paintPolygon(paintType: AwtPaintType, xPoints: IntArray, yPoints: IntArray, nPoints: Int) {
     if (nPoints <= 0) {
     }
     else {
@@ -727,10 +704,10 @@ class PGraphics2D private constructor(
     paintPolygon(AwtPaintType.FILL, xPoints, yPoints, nPoints)
   }
 
-  override fun drawImage(img: Image?, xform: AffineTransform, obs: ImageObserver?): Boolean = measureTime("drawImage") {
+  override fun drawImage(img: Image?, xform: AffineTransform, obs: ImageObserver?): Boolean {
     val info = AwtImageInfo.Transformation(xform.toList())
 
-    extractImage(img, info, "drawImage(img, xform, obs)")
+    return extractImage(img, info, "drawImage(img, xform, obs)")
   }
 
   override fun drawImage(img: BufferedImage?, op: BufferedImageOp, x: Int, y: Int) {
@@ -791,14 +768,14 @@ class PGraphics2D private constructor(
     return extractImage(img, info, "drawImage(img, d..., s..., bgcolor, observer)")
   }
 
-  private fun extractImage(img: Image?, awtImageInfo: AwtImageInfo, methodName: String): Boolean = measureTime<Boolean>(methodName) {
+  private fun extractImage(img: Image?, awtImageInfo: AwtImageInfo, methodName: String): Boolean {
     if (img == null) {
-      true  // java doc for all image methods: methods just return true if the img is null
+      return true  // java doc for all image methods: methods just return true if the img is null
     }
     else {
       paintArea { drawImage(imageId = ImageCacher.instance.getImageId(img, methodName), awtImageInfo = awtImageInfo) }
 
-      true
+      return true
     }
   }
 

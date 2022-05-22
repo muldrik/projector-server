@@ -21,16 +21,17 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-package org.jetbrains.projector.server.util.stats
+package org.jetbrains.projector.awt.stats.metrics
 
-import org.jetbrains.projector.server.util.ServerStats
 
-class TimeRate(name: String): Metric(name) {
-  var totalTime: Long = 0 // Synchronization doesn't give too much benefit
-  override fun add(value: Long) {
-    totalTime += value
-  }
-  override fun dumpResult(): String {
-    return "Time rate in $name: ${totalTime * 1000 / ServerStats.getTimestampFromStart()}"
+// At the moment all metrics can be described by a Long value. Change if needed
+abstract class Metric(val threshold: Long = 0, val objectsThreshold: Int = 0, val name: String) {
+  abstract fun add(value: Long, processedObjects: Int = 1)
+  abstract fun result(): Long
+  open fun csvParamNames(): String = "Time threshold=${threshold};Objects threshold=${objectsThreshold}" // Used to generate CSV file and make and Excel sheet with it
+  open var measurementUnit = "" // Override or change with .let{...} to specify the unit of measurement
+  open fun csvResult(): String = name + "," + csvParamNames() + "," + measurementUnit + "," + result()
+  companion object {
+    fun csvHeader(): String = "Name,Params,Measurement Unit,Value"
   }
 }

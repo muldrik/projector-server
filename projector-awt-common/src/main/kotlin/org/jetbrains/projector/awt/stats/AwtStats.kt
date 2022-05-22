@@ -21,20 +21,42 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-package org.jetbrains.projector.server.util.stats
+package org.jetbrains.projector.awt.stats
 
-import org.jetbrains.projector.server.util.ServerStats
-import org.jetbrains.projector.server.util.TimeMeasurement
+import org.jetbrains.projector.awt.stats.metrics.Average
+import org.jetbrains.projector.awt.stats.metrics.Metric
+import org.jetbrains.projector.awt.stats.metrics.PeakRate
+import org.jetbrains.projector.awt.stats.metrics.PowerPunishingRate
+import java.io.FileOutputStream
 
-class PeakRate(name: String, val threshold: Long): Metric(name) {
-  var totalTime: Long = 0
-  override fun add(value: Long) {
-    if (value > threshold) {
-      totalTime += value
+object AwtStats : TimeStats("Awt processing") {
+  override val metrics: List<Metric> = listOf(
+    Average(),
+    PeakRate(),
+    PeakRate(3),
+    PeakRate(5),
+    PeakRate(10),
+    PeakRate(20),
+    PowerPunishingRate(1.2, 3),
+    PowerPunishingRate(1.2, 5),
+    PowerPunishingRate(1.5, 3),
+    PowerPunishingRate(1.5, 5),
+    PowerPunishingRate(2.0, 3),
+    PowerPunishingRate(2.0, 5)
+  )
+
+  private val metricsFileName = "outputStats/awtMetrics.csv"
+
+  fun dumpStats() {
+    FileOutputStream(metricsFileName, true).bufferedWriter().use { out ->
+      out.write(Metric.csvHeader())
+      out.newLine()
+      for (metric in metrics) {
+        out.write(metric.csvResult())
+        out.newLine()
+      }
+      out.write("!")
+      out.newLine()
     }
-  }
-
-  override fun dumpResult(): String {
-    return "Peak rate in $name. Threshold ${threshold}ms: ${totalTime * 1000 / ServerStats.getTimestampFromStart()}"
   }
 }

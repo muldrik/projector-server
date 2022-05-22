@@ -21,22 +21,30 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-package org.jetbrains.projector.server.util.stats
+package org.jetbrains.projector.awt.stats.metrics
 
-class Average(name: String): Metric(name){
-  var measurementCount: Long = 0
-  var total: Long = 0
-  override fun add(value: Long) {
-    measurementCount++
-    total += value
+import org.jetbrains.projector.awt.stats.ServerStats
+import kotlin.math.pow
+import kotlin.math.roundToLong
+
+
+open class PunishingRate(threshold: Long = 0, objectsThreshold: Int = 0, name: String = "Punishing rate", val errorFunction: (Long, Int) -> Long)
+  : Metric(threshold, objectsThreshold, name) {
+  var totalTime: Long = 0
+  override var measurementUnit = "errorFun(ms)/second"
+  override fun add(value: Long, processedObjects: Int) {
+    totalTime += errorFunction(value, processedObjects)
   }
 
-  override fun dumpResult(): String {
-    return "Average in $name: ${total / measurementCount}"
-  }
-
-  fun result(): Long {
-    return total / measurementCount
-  }
-
+  override fun result(): Long = totalTime * 1000 / ServerStats.getTimestampFromStart()
 }
+
+class PowerPunishingRate(val power: Double, threshold: Long = 0, objectsThreshold: Int = 0, name: String = "Power punishing rate") :
+  PunishingRate(threshold, objectsThreshold, name, { time, processedObjects ->
+    if (time < threshold || processedObjects < objectsThreshold) 0L
+    else time.toDouble().pow(power).roundToLong()
+  }) {
+  override var measurementUnit = "(ms)^$power / second"
+  }
+
+

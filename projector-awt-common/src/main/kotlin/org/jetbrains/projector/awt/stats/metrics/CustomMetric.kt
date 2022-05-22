@@ -21,9 +21,7 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-package org.jetbrains.projector.server.util.stats
+package org.jetbrains.projector.awt.stats.metrics
 
-abstract class Metric(val name: String) {
-  abstract fun add(value: Long)
-  abstract fun dumpResult(): String
-}
+import org.jetbrains.projector.awt.stats.ServerStats
+

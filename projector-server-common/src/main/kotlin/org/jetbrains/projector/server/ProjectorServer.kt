@@ -38,6 +38,11 @@ import org.jetbrains.projector.awt.image.PVolatileImage
 import org.jetbrains.projector.awt.peer.PDesktopPeer
 import org.jetbrains.projector.awt.peer.PMouseInfoPeer
 import org.jetbrains.projector.awt.peer.base.PComponentPeerBase
+import org.jetbrains.projector.awt.stats.CreateUpdateStats
+import org.jetbrains.projector.awt.stats.CreateUpdateStats.CreateDataStats
+import org.jetbrains.projector.awt.stats.MemoryStats
+import org.jetbrains.projector.awt.stats.NetworkStats
+import org.jetbrains.projector.awt.stats.ServerStats
 import org.jetbrains.projector.common.misc.Do
 import org.jetbrains.projector.common.protocol.data.ImageData
 import org.jetbrains.projector.common.protocol.data.ImageId
@@ -231,21 +236,19 @@ class ProjectorServer private constructor(
   private fun createUpdateThread(): Thread = thread(isDaemon = true) {
     // TODO: remove this thread: encapsulate the logic in an extracted class and maybe even don't use threads but coroutines' channels
     logger.debug { "Daemon thread starts" }
-    val stats = ServerStats.CreateUpdateStats
-    val createDataStats = ServerStats.CreateDataStats
     while (!Thread.currentThread().isInterrupted) {
       try {
-        stats.startMeasurement()
+        CreateUpdateStats.startMeasurement()
 
-        createDataStats.startMeasurement()
+        CreateDataStats.startMeasurement()
         val dataToSend = createDataToSend()  // creating data even if there are no clients to avoid memory leaks
-        stats.addMeasurement(createDataStats.endMeasurement())
+        CreateUpdateStats.addMeasurement(CreateDataStats.endMeasurement())
 
-        ServerStats.CreateUpdateStats.simpleMeasure("Send pictures") {
+        CreateUpdateStats.simpleMeasure("Send pictures") {
           sendPictures(dataToSend)
         }
 
-        ServerStats.CreateUpdateStats.simpleMeasure("Cleanup") {
+        CreateUpdateStats.simpleMeasure("Cleanup") {
           dataToSend
             .distinctUpdatedOnscreenSurfaces()
             .map { it to listOf(Flush) }
@@ -260,7 +263,7 @@ class ProjectorServer private constructor(
               }
             }
         }
-        val res = ServerStats.CreateUpdateStats.endMeasurement()
+        val res = CreateUpdateStats.endMeasurement(dataToSend.size)
         sleep(10)
       }
       catch (ex: InterruptedException) {
@@ -279,9 +282,8 @@ class ProjectorServer private constructor(
 
   @OptIn(ExperimentalStdlibApi::class)
   private fun createDataToSend(): List<ServerEvent> {
-    val stats = ServerStats.CreateDataStats
     val clipboardEvent: List<ServerClipboardEvent>
-    stats.simpleMeasure("Clipboard event") {
+    CreateDataStats.simpleMeasure("Clipboard event") {
       clipboardEvent = when (isAgent) {
         false -> PClipboard.extractLastContents()?.toServerClipboardEvent().let(::listOfNotNull)
         true -> {
@@ -304,11 +306,11 @@ class ProjectorServer private constructor(
       }
     }
 
-    stats.simpleMeasure("Calculate main window shift") { calculateMainWindowShift() }
+    CreateDataStats.simpleMeasure("Calculate main window shift") { calculateMainWindowShift() }
 
     val allEvents: List<ServerEvent>
 
-    stats.simpleMeasure("Extract data") {
+    CreateDataStats.simpleMeasure("Extract data") {
       val drawCommands = extractData(ProjectorDrawEventQueue.commands).shrinkEvents()
 
       val windows = PWindow.windows
@@ -355,7 +357,7 @@ class ProjectorServer private constructor(
       }
     }
 
-    stats.simpleMeasure("Collect Garbage") { ProjectorImageCacher.collectGarbage() }
+    CreateDataStats.simpleMeasure("Collect Garbage") { ProjectorImageCacher.collectGarbage() }
 
     return allEvents
   }
@@ -716,7 +718,7 @@ class ProjectorServer private constructor(
           val encoded = toClientMessageEncoder.encode(message)
           toClientMessageCompressor.compress(encoded)
         }
-        ServerStats.NetworkStats.add(ServerStats.getTimestampFromStart(), compressed.size.toLong());
+        NetworkStats.add(ServerStats.getTimestampFromStart(), compressed.size.toLong());
         client.send(compressed)
       }
     }
@@ -736,7 +738,7 @@ class ProjectorServer private constructor(
   }
 
   fun start() {
-    ServerStats.MemoryStats.startMemoryStatsCollector()
+    MemoryStats.startMemoryStatsCollector()
     ServerStats.setStatsDumpCountdown()
     updateThread = createUpdateThread()
     caretInfoUpdater.start()

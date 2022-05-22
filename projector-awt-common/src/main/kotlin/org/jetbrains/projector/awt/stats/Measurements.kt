@@ -21,29 +21,35 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-package org.jetbrains.projector.server.util.stats
+package org.jetbrains.projector.awt.stats
 
-import org.jetbrains.projector.server.util.ServerStats
-import kotlin.math.pow
-import kotlin.math.roundToLong
+sealed class TimeMeasurement(open val name: String, open val start: Long, open val end: Long) {
+  abstract fun toCsvString(commonPrefix: String = ""): String
+}
 
-
-open class PunishingRate(name: String, val errorFunction: (Long) -> Long): Metric(name) {
-  var totalTime: Long = 0
-  override fun add(value: Long) {
-      totalTime += errorFunction(value)
+data class SimpleMeasurement(override val name: String, override val start: Long, override val end: Long) : TimeMeasurement(name, start,
+                                                                                                                            end) {
+  override fun toString(): String {
+    return "$name: ${end - start} ms"
   }
 
-  override fun dumpResult(): String {
-    return "Punishing rate in $name: ${totalTime * 1000 / ServerStats.getTimestampFromStart()} "
+  override fun toCsvString(commonPrefix: String): String {
+    return "${commonPrefix}$name,${end - start}\n"
   }
 }
 
-class PowerPunishingRate(name: String, val threshold: Long, val power: Double): PunishingRate(name, { time ->
-  if (time < threshold) 0L
-  else time.toDouble().pow(power).roundToLong()
-}) {
-  override fun dumpResult(): String {
-    return "Power punishing rate in $name. Power n^($power). Threshold ${threshold}ms: ${totalTime * 1000 / ServerStats.getTimestampFromStart()}"
+
+data class RecMeasurement(
+  override val name: String,
+  override val start: Long,
+  override val end: Long,
+  val subMeasurements: List<TimeMeasurement>,
+) : TimeMeasurement(name, start, end) {
+  override fun toCsvString(commonPrefix: String): String {
+    val res = StringBuilder()
+    subMeasurements.forEach { measurement ->
+      res.append(measurement.toCsvString(commonPrefix))
+    }
+    return res.toString()
   }
 }

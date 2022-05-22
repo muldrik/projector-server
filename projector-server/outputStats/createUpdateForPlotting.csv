@@ -1,0 +1,835 @@
+timestamp,task,len
+10,Clipboard event,1
+10,Calculate main window shift,9
+10,Extract data,5
+10,Collect Garbage,0
+10,Send pictures,0
+10,Cleanup,5
+1192,Clipboard event,0
+1192,Calculate main window shift,1
+1192,Extract data,0
+1192,Collect Garbage,0
+1192,Send pictures,0
+1192,Cleanup,0
+1367,Clipboard event,0
+1367,Calculate main window shift,16
+1367,Extract data,0
+1367,Collect Garbage,0
+1367,Send pictures,0
+1367,Cleanup,0
+3135,Clipboard event,0
+3135,Calculate main window shift,0
+3135,Extract data,0
+3135,Collect Garbage,0
+3135,Send pictures,10
+3135,Cleanup,0
+3989,Clipboard event,0
+3989,Calculate main window shift,7
+3989,Extract data,5
+3989,Collect Garbage,0
+3989,Send pictures,1
+3989,Cleanup,0
+4216,Clipboard event,0
+4216,Calculate main window shift,0
+4216,Extract data,0
+4216,Collect Garbage,148
+4216,Send pictures,0
+4216,Cleanup,0
+4407,Clipboard event,0
+4407,Calculate main window shift,9
+4407,Extract data,27
+4407,Collect Garbage,0
+4407,Send pictures,2
+4407,Cleanup,26
+5242,Clipboard event,0
+5242,Calculate main window shift,132
+5242,Extract data,0
+5242,Collect Garbage,0
+5242,Send pictures,0
+5242,Cleanup,0
+5416,Clipboard event,0
+5416,Calculate main window shift,92
+5416,Extract data,1
+5416,Collect Garbage,0
+5416,Send pictures,11
+5416,Cleanup,0
+5852,Clipboard event,0
+5852,Calculate main window shift,0
+5852,Extract data,1
+5852,Collect Garbage,0
+5852,Send pictures,9
+5852,Cleanup,1
+5873,Clipboard event,0
+5873,Calculate main window shift,11
+5873,Extract data,3
+5873,Collect Garbage,0
+5873,Send pictures,11
+5873,Cleanup,0
+5908,Clipboard event,0
+5908,Calculate main window shift,16
+5908,Extract data,3
+5908,Collect Garbage,0
+5908,Send pictures,8
+5908,Cleanup,0
+6528,Clipboard event,0
+6528,Calculate main window shift,2
+6528,Extract data,4
+6528,Collect Garbage,0
+6528,Send pictures,1
+6528,Cleanup,1
+6856,Clipboard event,0
+6856,Calculate main window shift,23
+6856,Extract data,1
+6856,Collect Garbage,0
+6856,Send pictures,0
+6856,Cleanup,0
+6890,Clipboard event,0
+6890,Calculate main window shift,28
+6890,Extract data,1
+6890,Collect Garbage,0
+6890,Send pictures,4
+6890,Cleanup,2
+6957,Clipboard event,0
+6957,Calculate main window shift,75
+6957,Extract data,0
+6957,Collect Garbage,0
+6957,Send pictures,0
+6957,Cleanup,0
+7196,Clipboard event,0
+7196,Calculate main window shift,6
+7196,Extract data,3
+7196,Collect Garbage,0
+7196,Send pictures,0
+7196,Cleanup,0
+7369,Clipboard event,0
+7369,Calculate main window shift,103
+7369,Extract data,0
+7369,Collect Garbage,0
+7369,Send pictures,0
+7369,Cleanup,0
+7551,Clipboard event,0
+7551,Calculate main window shift,37
+7551,Extract data,0
+7551,Collect Garbage,0
+7551,Send pictures,1
+7551,Cleanup,0
+7641,Clipboard event,0
+7641,Calculate main window shift,24
+7641,Extract data,1
+7641,Collect Garbage,0
+7641,Send pictures,5
+7641,Cleanup,0
+8711,Clipboard event,0
+8711,Calculate main window shift,0
+8711,Extract data,2
+8711,Collect Garbage,0
+8711,Send pictures,9
+8711,Cleanup,0
+8732,Clipboard event,0
+8732,Calculate main window shift,1
+8732,Extract data,3
+8732,Collect Garbage,0
+8732,Send pictures,5
+8732,Cleanup,0
+9549,Clipboard event,1
+9549,Calculate main window shift,281
+9549,Extract data,1
+9549,Collect Garbage,0
+9549,Send pictures,0
+9549,Cleanup,0
+9927,Clipboard event,0
+9927,Calculate main window shift,25
+9927,Extract data,0
+9927,Collect Garbage,0
+9927,Send pictures,0
+9927,Cleanup,0
+10028,Clipboard event,0
+10028,Calculate main window shift,16
+10028,Extract data,1
+10028,Collect Garbage,0
+10028,Send pictures,3
+10028,Cleanup,1
+10323,Clipboard event,0
+10323,Calculate main window shift,103
+10323,Extract data,1
+10323,Collect Garbage,0
+10323,Send pictures,5
+10323,Cleanup,0
+10451,Clipboard event,0
+10451,Calculate main window shift,67
+10451,Extract data,1
+10451,Collect Garbage,0
+10451,Send pictures,0
+10451,Cleanup,0
+10965,Clipboard event,0
+10965,Calculate main window shift,33
+10965,Extract data,0
+10965,Collect Garbage,0
+10965,Send pictures,0
+10965,Cleanup,0
+11421,Clipboard event,0
+11421,Calculate main window shift,74
+11421,Extract data,2
+11421,Collect Garbage,0
+11421,Send pictures,7
+11421,Cleanup,0
+12153,Clipboard event,0
+12153,Calculate main window shift,13
+12153,Extract data,2
+12153,Collect Garbage,0
+12153,Send pictures,6
+12153,Cleanup,0
+12287,Clipboard event,0
+12287,Calculate main window shift,6
+12287,Extract data,1
+12287,Collect Garbage,0
+12287,Send pictures,2
+12287,Cleanup,0
+12360,Clipboard event,0
+12360,Calculate main window shift,14
+12360,Extract data,0
+12360,Collect Garbage,0
+12360,Send pictures,2
+12360,Cleanup,0
+12448,Clipboard event,3
+12448,Calculate main window shift,0
+12448,Extract data,6
+12448,Collect Garbage,0
+12448,Send pictures,0
+12448,Cleanup,0
+12545,Clipboard event,0
+12545,Calculate main window shift,0
+12545,Extract data,0
+12545,Collect Garbage,0
+12545,Send pictures,0
+12545,Cleanup,0
+12613,Clipboard event,0
+12613,Calculate main window shift,46
+12613,Extract data,2
+12613,Collect Garbage,0
+12613,Send pictures,7
+12613,Cleanup,0
+12713,Clipboard event,0
+12713,Calculate main window shift,16
+12713,Extract data,0
+12713,Collect Garbage,0
+12713,Send pictures,1
+12713,Cleanup,0
+12750,Clipboard event,0
+12750,Calculate main window shift,1
+12750,Extract data,1
+12750,Collect Garbage,0
+12750,Send pictures,16
+12750,Cleanup,1
+12853,Clipboard event,0
+12853,Calculate main window shift,12
+12853,Extract data,7
+12853,Collect Garbage,0
+12853,Send pictures,1
+12853,Cleanup,0
+13402,Clipboard event,0
+13402,Calculate main window shift,12
+13402,Extract data,1
+13402,Collect Garbage,0
+13402,Send pictures,4
+13402,Cleanup,0
+13430,Clipboard event,0
+13430,Calculate main window shift,90
+13430,Extract data,1
+13430,Collect Garbage,0
+13430,Send pictures,1
+13430,Cleanup,0
+13782,Clipboard event,0
+13782,Calculate main window shift,17
+13782,Extract data,7
+13782,Collect Garbage,0
+13782,Send pictures,2
+13782,Cleanup,1
+13963,Clipboard event,0
+13963,Calculate main window shift,1
+13963,Extract data,8
+13963,Collect Garbage,0
+13963,Send pictures,0
+13963,Cleanup,0
+14313,Clipboard event,0
+14313,Calculate main window shift,11
+14313,Extract data,2
+14313,Collect Garbage,0
+14313,Send pictures,47
+14313,Cleanup,1
+14439,Clipboard event,0
+14439,Calculate main window shift,10
+14439,Extract data,0
+14439,Collect Garbage,0
+14439,Send pictures,2
+14439,Cleanup,0
+14508,Clipboard event,0
+14508,Calculate main window shift,8
+14508,Extract data,2
+14508,Collect Garbage,0
+14508,Send pictures,4
+14508,Cleanup,0
+14617,Clipboard event,0
+14617,Calculate main window shift,9
+14617,Extract data,0
+14617,Collect Garbage,0
+14617,Send pictures,0
+14617,Cleanup,0
+14679,Clipboard event,0
+14679,Calculate main window shift,2
+14679,Extract data,7
+14679,Collect Garbage,0
+14679,Send pictures,0
+14679,Cleanup,0
+14709,Clipboard event,0
+14709,Calculate main window shift,11
+14709,Extract data,0
+14709,Collect Garbage,0
+14709,Send pictures,2
+14709,Cleanup,0
+14826,Clipboard event,0
+14826,Calculate main window shift,10
+14826,Extract data,0
+14826,Collect Garbage,0
+14826,Send pictures,0
+14826,Cleanup,0
+15015,Clipboard event,0
+15015,Calculate main window shift,56
+15015,Extract data,2
+15015,Collect Garbage,0
+15015,Send pictures,9
+15015,Cleanup,0
+15092,Clipboard event,0
+15092,Calculate main window shift,2
+15092,Extract data,12
+15092,Collect Garbage,0
+15092,Send pictures,12
+15092,Cleanup,0
+15517,Clipboard event,0
+15517,Calculate main window shift,32
+15517,Extract data,0
+15517,Collect Garbage,0
+15517,Send pictures,3
+15517,Cleanup,0
+15585,Clipboard event,0
+15585,Calculate main window shift,27
+15585,Extract data,1
+15585,Collect Garbage,0
+15585,Send pictures,5
+15585,Cleanup,0
+15669,Clipboard event,0
+15669,Calculate main window shift,8
+15669,Extract data,0
+15669,Collect Garbage,0
+15669,Send pictures,1
+15669,Cleanup,0
+15688,Clipboard event,0
+15688,Calculate main window shift,6
+15688,Extract data,2
+15688,Collect Garbage,0
+15688,Send pictures,4
+15688,Cleanup,0
+15722,Clipboard event,0
+15722,Calculate main window shift,12
+15722,Extract data,0
+15722,Collect Garbage,0
+15722,Send pictures,3
+15722,Cleanup,0
+15748,Clipboard event,0
+15748,Calculate main window shift,20
+15748,Extract data,1
+15748,Collect Garbage,0
+15748,Send pictures,2
+15748,Cleanup,0
+15788,Clipboard event,0
+15788,Calculate main window shift,4
+15788,Extract data,5
+15788,Collect Garbage,1
+15788,Send pictures,4
+15788,Cleanup,0
+16071,Clipboard event,0
+16071,Calculate main window shift,11
+16071,Extract data,0
+16071,Collect Garbage,0
+16071,Send pictures,0
+16071,Cleanup,0
+16183,Clipboard event,0
+16183,Calculate main window shift,10
+16183,Extract data,1
+16183,Collect Garbage,0
+16183,Send pictures,3
+16183,Cleanup,0
+16463,Clipboard event,0
+16463,Calculate main window shift,111
+16463,Extract data,0
+16463,Collect Garbage,0
+16463,Send pictures,1
+16463,Cleanup,0
+16597,Clipboard event,0
+16597,Calculate main window shift,64
+16597,Extract data,0
+16597,Collect Garbage,0
+16597,Send pictures,1
+16597,Cleanup,0
+16729,Clipboard event,0
+16729,Calculate main window shift,9
+16729,Extract data,0
+16729,Collect Garbage,0
+16729,Send pictures,0
+16729,Cleanup,0
+16783,Clipboard event,0
+16783,Calculate main window shift,22
+16783,Extract data,2
+16783,Collect Garbage,0
+16783,Send pictures,8
+16783,Cleanup,0
+17373,Clipboard event,0
+17373,Calculate main window shift,25
+17373,Extract data,0
+17373,Collect Garbage,0
+17373,Send pictures,1
+17373,Cleanup,0
+17421,Clipboard event,0
+17421,Calculate main window shift,20
+17421,Extract data,0
+17421,Collect Garbage,0
+17421,Send pictures,1
+17421,Cleanup,0
+17463,Clipboard event,0
+17463,Calculate main window shift,1
+17463,Extract data,1
+17463,Collect Garbage,13
+17463,Send pictures,1
+17463,Cleanup,0
+17832,Clipboard event,0
+17832,Calculate main window shift,85
+17832,Extract data,0
+17832,Collect Garbage,0
+17832,Send pictures,1
+17832,Cleanup,0
+17928,Clipboard event,0
+17928,Calculate main window shift,0
+17928,Extract data,1
+17928,Collect Garbage,27
+17928,Send pictures,1
+17928,Cleanup,0
+18396,Clipboard event,0
+18396,Calculate main window shift,8
+18396,Extract data,1
+18396,Collect Garbage,0
+18396,Send pictures,1
+18396,Cleanup,0
+19489,Clipboard event,0
+19489,Calculate main window shift,17
+19489,Extract data,2
+19489,Collect Garbage,0
+19489,Send pictures,4
+19489,Cleanup,0
+19571,Clipboard event,0
+19571,Calculate main window shift,17
+19571,Extract data,0
+19571,Collect Garbage,0
+19571,Send pictures,0
+19571,Cleanup,0
+19629,Clipboard event,0
+19629,Calculate main window shift,42
+19629,Extract data,2
+19629,Collect Garbage,0
+19629,Send pictures,3
+19629,Cleanup,0
+19730,Clipboard event,1
+19730,Calculate main window shift,0
+19730,Extract data,1
+19730,Collect Garbage,9
+19730,Send pictures,0
+19730,Cleanup,0
+20126,Clipboard event,0
+20126,Calculate main window shift,32
+20126,Extract data,2
+20126,Collect Garbage,0
+20126,Send pictures,10
+20126,Cleanup,0
+20230,Clipboard event,0
+20230,Calculate main window shift,33
+20230,Extract data,2
+20230,Collect Garbage,0
+20230,Send pictures,3
+20230,Cleanup,1
+20428,Clipboard event,0
+20428,Calculate main window shift,5
+20428,Extract data,1
+20428,Collect Garbage,0
+20428,Send pictures,3
+20428,Cleanup,0
+20504,Clipboard event,0
+20504,Calculate main window shift,10
+20504,Extract data,2
+20504,Collect Garbage,0
+20504,Send pictures,2
+20504,Cleanup,0
+20613,Clipboard event,0
+20613,Calculate main window shift,20
+20613,Extract data,2
+20613,Collect Garbage,0
+20613,Send pictures,3
+20613,Cleanup,0
+20830,Clipboard event,0
+20830,Calculate main window shift,20
+20830,Extract data,0
+20830,Collect Garbage,0
+20830,Send pictures,0
+20830,Cleanup,0
+20899,Clipboard event,0
+20899,Calculate main window shift,33
+20899,Extract data,1
+20899,Collect Garbage,0
+20899,Send pictures,2
+20899,Cleanup,0
+20968,Clipboard event,0
+20968,Calculate main window shift,9
+20968,Extract data,1
+20968,Collect Garbage,0
+20968,Send pictures,2
+20968,Cleanup,0
+21027,Clipboard event,0
+21027,Calculate main window shift,42
+21027,Extract data,1
+21027,Collect Garbage,0
+21027,Send pictures,2
+21027,Cleanup,0
+21092,Clipboard event,0
+21092,Calculate main window shift,8
+21092,Extract data,1
+21092,Collect Garbage,0
+21092,Send pictures,2
+21092,Cleanup,0
+21489,Clipboard event,0
+21489,Calculate main window shift,109
+21489,Extract data,2
+21489,Collect Garbage,0
+21489,Send pictures,1
+21489,Cleanup,0
+21611,Clipboard event,0
+21611,Calculate main window shift,13
+21611,Extract data,1
+21611,Collect Garbage,0
+21611,Send pictures,1
+21611,Cleanup,0
+21901,Clipboard event,0
+21901,Calculate main window shift,1
+21901,Extract data,7
+21901,Collect Garbage,0
+21901,Send pictures,1
+21901,Cleanup,0
+21951,Clipboard event,0
+21951,Calculate main window shift,15
+21951,Extract data,0
+21951,Collect Garbage,0
+21951,Send pictures,0
+21951,Cleanup,0
+22116,Clipboard event,0
+22116,Calculate main window shift,15
+22116,Extract data,2
+22116,Collect Garbage,0
+22116,Send pictures,1
+22116,Cleanup,0
+22162,Clipboard event,0
+22162,Calculate main window shift,17
+22162,Extract data,0
+22162,Collect Garbage,0
+22162,Send pictures,0
+22162,Cleanup,0
+22189,Clipboard event,0
+22189,Calculate main window shift,11
+22189,Extract data,1
+22189,Collect Garbage,0
+22189,Send pictures,2
+22189,Cleanup,1
+22214,Clipboard event,0
+22214,Calculate main window shift,3
+22214,Extract data,5
+22214,Collect Garbage,0
+22214,Send pictures,1
+22214,Cleanup,0
+22233,Clipboard event,0
+22233,Calculate main window shift,13
+22233,Extract data,2
+22233,Collect Garbage,0
+22233,Send pictures,6
+22233,Cleanup,0
+22888,Clipboard event,0
+22888,Calculate main window shift,11
+22888,Extract data,1
+22888,Collect Garbage,0
+22888,Send pictures,1
+22888,Cleanup,0
+22943,Clipboard event,0
+22943,Calculate main window shift,14
+22943,Extract data,2
+22943,Collect Garbage,1
+22943,Send pictures,3
+22943,Cleanup,0
+23009,Clipboard event,0
+23009,Calculate main window shift,7
+23009,Extract data,1
+23009,Collect Garbage,0
+23009,Send pictures,1
+23009,Cleanup,0
+23279,Clipboard event,0
+23279,Calculate main window shift,7
+23279,Extract data,1
+23279,Collect Garbage,0
+23279,Send pictures,1
+23279,Cleanup,0
+23728,Clipboard event,0
+23728,Calculate main window shift,1
+23728,Extract data,10
+23728,Collect Garbage,0
+23728,Send pictures,0
+23728,Cleanup,0
+25598,Clipboard event,0
+25598,Calculate main window shift,8
+25598,Extract data,1
+25598,Collect Garbage,0
+25598,Send pictures,2
+25598,Cleanup,0
+25640,Clipboard event,0
+25640,Calculate main window shift,9
+25640,Extract data,1
+25640,Collect Garbage,0
+25640,Send pictures,1
+25640,Cleanup,1
+25662,Clipboard event,0
+25662,Calculate main window shift,0
+25662,Extract data,8
+25662,Collect Garbage,0
+25662,Send pictures,0
+25662,Cleanup,1
+26682,Clipboard event,0
+26682,Calculate main window shift,16
+26682,Extract data,1
+26682,Collect Garbage,0
+26682,Send pictures,2
+26682,Cleanup,0
+26735,Clipboard event,0
+26735,Calculate main window shift,10
+26735,Extract data,1
+26735,Collect Garbage,0
+26735,Send pictures,6
+26735,Cleanup,0
+28580,Clipboard event,1
+28580,Calculate main window shift,9
+28580,Extract data,0
+28580,Collect Garbage,0
+28580,Send pictures,0
+28580,Cleanup,0
+28641,Clipboard event,0
+28641,Calculate main window shift,6
+28641,Extract data,1
+28641,Collect Garbage,0
+28641,Send pictures,2
+28641,Cleanup,0
+28661,Clipboard event,0
+28661,Calculate main window shift,10
+28661,Extract data,1
+28661,Collect Garbage,0
+28661,Send pictures,1
+28661,Cleanup,0
+29067,Clipboard event,0
+29067,Calculate main window shift,32
+29067,Extract data,3
+29067,Collect Garbage,0
+29067,Send pictures,5
+29067,Cleanup,0
+29390,Clipboard event,0
+29390,Calculate main window shift,76
+29390,Extract data,1
+29390,Collect Garbage,0
+29390,Send pictures,0
+29390,Cleanup,0
+30251,Clipboard event,0
+30251,Calculate main window shift,10
+30251,Extract data,0
+30251,Collect Garbage,0
+30251,Send pictures,0
+30251,Cleanup,0
+30283,Clipboard event,0
+30283,Calculate main window shift,19
+30283,Extract data,1
+30283,Collect Garbage,0
+30283,Send pictures,3
+30283,Cleanup,1
+30710,Clipboard event,0
+30710,Calculate main window shift,1
+30710,Extract data,3
+30710,Collect Garbage,4
+30710,Send pictures,2
+30710,Cleanup,0
+30805,Clipboard event,0
+30805,Calculate main window shift,21
+30805,Extract data,1
+30805,Collect Garbage,0
+30805,Send pictures,1
+30805,Cleanup,0
+30891,Clipboard event,0
+30891,Calculate main window shift,20
+30891,Extract data,2
+30891,Collect Garbage,0
+30891,Send pictures,1
+30891,Cleanup,0
+30940,Clipboard event,0
+30940,Calculate main window shift,22
+30940,Extract data,1
+30940,Collect Garbage,0
+30940,Send pictures,2
+30940,Cleanup,0
+31111,Clipboard event,0
+31111,Calculate main window shift,10
+31111,Extract data,2
+31111,Collect Garbage,0
+31111,Send pictures,1
+31111,Cleanup,0
+31200,Clipboard event,0
+31200,Calculate main window shift,8
+31200,Extract data,1
+31200,Collect Garbage,0
+31200,Send pictures,1
+31200,Cleanup,1
+31865,Clipboard event,0
+31865,Calculate main window shift,2
+31865,Extract data,6
+31865,Collect Garbage,0
+31865,Send pictures,1
+31865,Cleanup,0
+32294,Clipboard event,0
+32294,Calculate main window shift,8
+32294,Extract data,1
+32294,Collect Garbage,0
+32294,Send pictures,1
+32294,Cleanup,0
+32335,Clipboard event,0
+32335,Calculate main window shift,5
+32335,Extract data,3
+32335,Collect Garbage,0
+32335,Send pictures,2
+32335,Cleanup,0
+33215,Clipboard event,0
+33215,Calculate main window shift,8
+33215,Extract data,0
+33215,Collect Garbage,0
+33215,Send pictures,2
+33215,Cleanup,0
+33882,Clipboard event,0
+33882,Calculate main window shift,7
+33882,Extract data,1
+33882,Collect Garbage,0
+33882,Send pictures,1
+33882,Cleanup,0
+33943,Clipboard event,0
+33943,Calculate main window shift,8
+33943,Extract data,0
+33943,Collect Garbage,0
+33943,Send pictures,1
+33943,Cleanup,0
+34294,Clipboard event,0
+34294,Calculate main window shift,8
+34294,Extract data,1
+34294,Collect Garbage,0
+34294,Send pictures,1
+34294,Cleanup,0
+34336,Clipboard event,0
+34336,Calculate main window shift,10
+34336,Extract data,0
+34336,Collect Garbage,0
+34336,Send pictures,1
+34336,Cleanup,1
+34589,Clipboard event,0
+34589,Calculate main window shift,9
+34589,Extract data,1
+34589,Collect Garbage,0
+34589,Send pictures,2
+34589,Cleanup,0
+38699,Clipboard event,0
+38699,Calculate main window shift,12
+38699,Extract data,0
+38699,Collect Garbage,0
+38699,Send pictures,1
+38699,Cleanup,0
+38776,Clipboard event,0
+38776,Calculate main window shift,8
+38776,Extract data,0
+38776,Collect Garbage,0
+38776,Send pictures,1
+38776,Cleanup,0
+39186,Clipboard event,0
+39186,Calculate main window shift,15
+39186,Extract data,0
+39186,Collect Garbage,0
+39186,Send pictures,0
+39186,Cleanup,0
+46162,Clipboard event,0
+46162,Calculate main window shift,1
+46162,Extract data,0
+46162,Collect Garbage,0
+46162,Send pictures,21
+46162,Cleanup,0
+48522,Clipboard event,1
+48522,Calculate main window shift,9
+48522,Extract data,0
+48522,Collect Garbage,0
+48522,Send pictures,1
+48522,Cleanup,0
+48962,Clipboard event,0
+48962,Calculate main window shift,8
+48962,Extract data,1
+48962,Collect Garbage,0
+48962,Send pictures,1
+48962,Cleanup,0
+49274,Clipboard event,0
+49274,Calculate main window shift,25
+49274,Extract data,0
+49274,Collect Garbage,0
+49274,Send pictures,0
+49274,Cleanup,0
+51427,Clipboard event,0
+51427,Calculate main window shift,13
+51427,Extract data,0
+51427,Collect Garbage,0
+51427,Send pictures,0
+51427,Cleanup,0
+53525,Clipboard event,0
+53525,Calculate main window shift,10
+53525,Extract data,0
+53525,Collect Garbage,1
+53525,Send pictures,0
+53525,Cleanup,0
+54587,Clipboard event,0
+54587,Calculate main window shift,11
+54587,Extract data,0
+54587,Collect Garbage,0
+54587,Send pictures,0
+54587,Cleanup,0
+54629,Clipboard event,0
+54629,Calculate main window shift,28
+54629,Extract data,0
+54629,Collect Garbage,0
+54629,Send pictures,0
+54629,Cleanup,0
+54851,Clipboard event,0
+54851,Calculate main window shift,15
+54851,Extract data,0
+54851,Collect Garbage,0
+54851,Send pictures,0
+54851,Cleanup,0
+58165,Clipboard event,0
+58165,Calculate main window shift,12
+58165,Extract data,1
+58165,Collect Garbage,0
+58165,Send pictures,1
+58165,Cleanup,0
+58200,Clipboard event,0
+58200,Calculate main window shift,8
+58200,Extract data,0
+58200,Collect Garbage,0
+58200,Send pictures,2
+58200,Cleanup,0

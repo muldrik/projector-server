@@ -21,19 +21,17 @@
  * Please contact JetBrains, Na Hrebenech II 1718/10, Prague, 14000, Czech Republic
  * if you need additional information or have any questions.
  */
-package org.jetbrains.projector.server.util.stats
+package org.jetbrains.projector.awt.stats.metrics
 
-class CustomMetric(name: String, private val addFun: (Long) -> Unit, private val dumpFun: () -> String): Metric(name) {
-  override fun add(value: Long) = addFun(value)
-  override fun dumpResult(): String = dumpFun()
-}
+import org.jetbrains.projector.awt.stats.ServerStats
 
-class CustomMetricBuilder {
-  var name: String = "Unknown measurement"
-  var addFun: (Long) -> Unit = { }
-  var dumpFun: () -> String = { "No data" }
-
-  fun build(): CustomMetric {
-    return CustomMetric(name, addFun, dumpFun)
+class PeakRate(threshold: Long = 0, objectsThreshold: Int = 0, name: String = "Peak rate"): Metric(threshold, objectsThreshold, name) {
+  var totalTime: Long = 0
+  override var measurementUnit = "millis / second"
+  override fun add(value: Long, processedObjects: Int) {
+    if (processedObjects < objectsThreshold || value < threshold) return
+    totalTime += value
   }
+
+  override fun result(): Long = totalTime * 1000 / ServerStats.getTimestampFromStart()
 }
