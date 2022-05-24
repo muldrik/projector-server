@@ -27,9 +27,10 @@ import org.jetbrains.projector.awt.stats.metrics.Average
 import org.jetbrains.projector.awt.stats.metrics.Metric
 import org.jetbrains.projector.awt.stats.metrics.PeakRate
 import org.jetbrains.projector.awt.stats.metrics.PowerPunishingRate
+import java.io.File
 import java.io.FileOutputStream
 
-object AwtStats : TimeStats("Awt processing") {
+object AwtStats : TopLevelTimeStats("Awt processing") {
   override val metrics: List<Metric> = listOf(
     Average(),
     PeakRate(),
@@ -45,18 +46,7 @@ object AwtStats : TimeStats("Awt processing") {
     PowerPunishingRate(2.0, 5)
   )
 
-  private val metricsFileName = "outputStats/awtMetrics.csv"
+  override val plottingFileName = "outputStats/awtForPlotting.csv"
+  override val metricsFileName = "outputStats/awtMetrics.csv"
 
-  fun dumpStats() {
-    FileOutputStream(metricsFileName, true).bufferedWriter().use { out ->
-      out.write(Metric.csvHeader())
-      out.newLine()
-      for (metric in metrics) {
-        out.write(metric.csvResult())
-        out.newLine()
-      }
-      out.write("!")
-      out.newLine()
-    }
-  }
 }

@@ -24,7 +24,7 @@
 package org.jetbrains.projector.awt.stats
 
 import org.jetbrains.projector.awt.stats.metrics.Average
-import java.io.File
+import java.io.FileOutputStream
 
 object NetworkStats {
   val averagePacketSizes = Average()
@@ -46,21 +46,24 @@ object NetworkStats {
     averagePacketSizes.add(byteSize)
   }
 
-  val metricsFile = File("outputStats/network.txt")
-  val csvFile = File("outputStats/network.csv")
+  val metricsFileName = "outputStats/networkMetrics.txt"
+  val plottingFileName = "outputStats/networkForPlotting.csv"
 
   fun dumpStats() {
-    metricsFile.printWriter().use { out ->
-      out.println("Average in packet size (bytes): ${averagePacketSizes.result()}")
-      println(averagePacketSizes.total)
-      println(ServerStats.getTimestampFromStart() - firstMessageTime)
-      out.println(
-        "Average in network usage (Kb/s): ${averagePacketSizes.total * 1000 / 1024 / (System.currentTimeMillis() - firstMessageTime)}")
+    FileOutputStream(metricsFileName, true).bufferedWriter().use { out ->
+      out.write("${averagePacketSizes.result()}") // Average in packet size (bytes)
+      out.newLine()
+      out.write( // Average in network usage (Kb/s)
+        "${averagePacketSizes.total * 1000 / 1024 / (System.currentTimeMillis() - firstMessageTime)}")
+      out.newLine()
+      out.write("!")
+      out.newLine()
     }
     synchronized(packets) {
-      csvFile.printWriter().use { out ->
-        out.println("timestamp,bytes")
-        packets.forEach { out.print(it.toCsvString()) }
+      FileOutputStream(plottingFileName, true).bufferedWriter().use { out ->
+        out.write("timestamp,bytes")
+        out.newLine()
+        packets.forEach { out.write(it.toCsvString()) }
       }
     }
   }

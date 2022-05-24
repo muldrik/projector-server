@@ -30,7 +30,7 @@ import org.jetbrains.projector.awt.stats.metrics.PowerPunishingRate
 import java.io.File
 import java.io.FileOutputStream
 
-object CreateUpdateStats : TimeStats("Create update loop") {
+object CreateUpdateStats : TopLevelTimeStats("Create update loop") {
   val CreateDataStats = TimeStats("Create data to send")
 
   override val metrics = listOf(
@@ -51,38 +51,7 @@ object CreateUpdateStats : TimeStats("Create update loop") {
     PowerPunishingRate(2.0, 5)
   )
 
-  private const val timeThreshold: Long = 8
-  private val interestingMeasurements = mutableListOf<TimeMeasurement>()
-  override fun endMeasurement(processedObjects: Int): TimeMeasurement = super.endMeasurement(processedObjects).also {
-    if (it.end - it.start > timeThreshold)
-      synchronized(interestingMeasurements) { interestingMeasurements.add(it) }
-  }
-
-  private val csvFileName = File("outputStats/createUpdateForPlotting.csv")
-  private val metricsFileName = File("outputStats/createUpdateMetrics.csv")
-  fun dumpStats() {
-
-    FileOutputStream(metricsFileName, true).bufferedWriter().use { out ->
-      out.write(Metric.csvHeader())
-      out.newLine()
-      for (metric in metrics) {
-        out.write(metric.csvResult())
-        out.newLine()
-      }
-      out.write("!")
-      out.newLine()
-    }
-
-    synchronized(interestingMeasurements) {
-      FileOutputStream(csvFileName).bufferedWriter().use { out ->
-        out.write("timestamp,task,len")
-        out.newLine()
-        interestingMeasurements.forEach {
-          val timestamp = it.start
-          out.write(it.toCsvString("$timestamp,").removeSuffix(","))
-        }
-      }
-    }
-  }
+  override val plottingFileName = "outputStats/createUpdateForPlotting.csv"
+  override val metricsFileName = "outputStats/createUpdateMetrics.csv"
 }
 

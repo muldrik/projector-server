@@ -11,4 +11,5 @@ local.properties
 pluginVersions.txt
 .gitignore
 *.log
-projector-server/stats/
+projector-server/outputStats/*.txt
+projector-server/outputStats/*.csv

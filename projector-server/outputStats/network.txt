@@ -1,2 +1,0 @@
-Average in packet size (bytes): 6854
-Average in network usage (Kb/s): 152

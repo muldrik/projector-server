@@ -59,11 +59,13 @@ object MemoryStats {
     }
   }
 
-  val metricsFileName = "outputStats/memory.txt"
-  val fileForPlottingName = "outputStats/memory.csv"
+  val metricsFileName = "outputStats/memoryMetrics.txt"
+  val fileForPlottingName = "outputStats/memoryForPlotting.csv"
   fun dumpStats() {
     FileOutputStream(metricsFileName, true).bufferedWriter().use { out ->
       out.write("${average.result() / 1024 / 1024}")
+      out.newLine()
+      out.write("!")
       out.newLine()
     }
     synchronized(usages) {

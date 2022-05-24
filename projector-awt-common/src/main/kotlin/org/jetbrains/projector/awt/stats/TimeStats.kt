@@ -24,6 +24,8 @@
 package org.jetbrains.projector.awt.stats
 
 import org.jetbrains.projector.awt.stats.metrics.Metric
+import java.io.File
+import java.io.FileOutputStream
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -65,4 +67,42 @@ open class TimeStats(val blockName: String) {
     val end = ServerStats.getTimestampFromStart()
     currentMeasurements.add(SimpleMeasurement(name, start, end))
   }
+}
+
+open class TopLevelTimeStats(blockName: String) : TimeStats(blockName) {
+
+  open val timeThreshold: Long = 8
+  private val interestingMeasurements = mutableListOf<TimeMeasurement>()
+  override fun endMeasurement(processedObjects: Int): TimeMeasurement = super.endMeasurement(processedObjects).also {
+    if (it.end - it.start > timeThreshold)
+      synchronized(interestingMeasurements) { interestingMeasurements.add(it) }
+  }
+
+  open val plottingFileName = "outputStats/unknownForPlotting.csv"
+  open val metricsFileName = "outputStats/unknownForPlotting.csv"
+
+  fun dumpStats() {
+    FileOutputStream(metricsFileName, true).bufferedWriter().use { out ->
+      out.write(Metric.csvHeader())
+      out.newLine()
+      for (metric in metrics) {
+        out.write(metric.csvResult())
+        out.newLine()
+      }
+      out.write("!")
+      out.newLine()
+    }
+
+    synchronized(interestingMeasurements) {
+      FileOutputStream(plottingFileName).bufferedWriter().use { out ->
+        out.write("timestamp,task,len")
+        out.newLine()
+        interestingMeasurements.forEach {
+          val timestamp = it.start
+          out.write(it.toCsvString("$timestamp,").removeSuffix(","))
+        }
+      }
+    }
+  }
+
 }
