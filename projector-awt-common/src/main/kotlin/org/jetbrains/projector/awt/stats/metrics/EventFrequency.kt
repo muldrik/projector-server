@@ -25,3 +25,18 @@ package org.jetbrains.projector.awt.stats.metrics
 
 import org.jetbrains.projector.awt.stats.ServerStats
 
+class EventFrequency(threshold: Long = 0, objectsThreshold: Int = 0, name: String = "Event frequency"): Metric(threshold, objectsThreshold, name) {
+  var total: Long = 0
+  override var measurementUnit = "ms / event"
+
+  override fun add(value: Long, processedObjects: Int) {
+    if (value < threshold || processedObjects < objectsThreshold) return
+    total ++
+  }
+
+  override fun result(): Long {
+    return if (total > 0)
+      ServerStats.getTimestampFromStart() / total
+    else -1
+  }
+}

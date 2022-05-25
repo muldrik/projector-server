@@ -23,27 +23,27 @@
  */
 package org.jetbrains.projector.awt.stats
 
-import org.jetbrains.projector.awt.stats.metrics.Average
-import org.jetbrains.projector.awt.stats.metrics.Metric
-import org.jetbrains.projector.awt.stats.metrics.PeakRate
-import org.jetbrains.projector.awt.stats.metrics.PowerPunishingRate
+import org.jetbrains.projector.awt.stats.metrics.*
 import java.io.File
 import java.io.FileOutputStream
 
 object AwtStats : TopLevelTimeStats("Awt processing") {
   override val metrics: List<Metric> = listOf(
     Average(),
+    EventFrequency(10),
+    EventFrequency(50),
     PeakRate(),
     PeakRate(3),
     PeakRate(5),
     PeakRate(10),
     PeakRate(20),
+    PeakRate(40),
     PowerPunishingRate(1.2, 3),
     PowerPunishingRate(1.2, 5),
-    PowerPunishingRate(1.5, 3),
     PowerPunishingRate(1.5, 5),
-    PowerPunishingRate(2.0, 3),
-    PowerPunishingRate(2.0, 5)
+    PowerPunishingRate(2.0, 5),
+    PowerPunishingRate(1.5, 15),
+    PowerPunishingRate(1.5, 30),
   )
 
   override val plottingFileName = "outputStats/awtForPlotting.csv"

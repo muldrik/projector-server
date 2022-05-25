@@ -27,7 +27,7 @@ import org.jetbrains.projector.awt.stats.ServerStats
 
 class PeakRate(threshold: Long = 0, objectsThreshold: Int = 0, name: String = "Peak rate"): Metric(threshold, objectsThreshold, name) {
   var totalTime: Long = 0
-  override var measurementUnit = "millis / second"
+  override var measurementUnit = "ms / sec"
   override fun add(value: Long, processedObjects: Int) {
     if (processedObjects < objectsThreshold || value < threshold) return
     totalTime += value

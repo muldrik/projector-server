@@ -29,6 +29,7 @@ class Average(threshold: Long = 0, objectsThreshold: Int = 0, name: String = "Av
   override var measurementUnit = "ms"
 
   override fun add(value: Long, processedObjects: Int) {
+    if (value < threshold || processedObjects < objectsThreshold) return
     measurementCount++
     total += value
   }

@@ -24,7 +24,7 @@
 package org.jetbrains.projector.awt.stats.metrics
 
 
-// At the moment all metrics can be described by a Long value. Change if needed
+// At the moment all metrics can be stored as a Long value. Change if needed
 abstract class Metric(val threshold: Long = 0, val objectsThreshold: Int = 0, val name: String) {
   abstract fun add(value: Long, processedObjects: Int = 1)
   abstract fun result(): Long

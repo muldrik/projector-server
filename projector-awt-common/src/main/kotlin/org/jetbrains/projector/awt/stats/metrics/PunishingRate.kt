@@ -44,7 +44,7 @@ class PowerPunishingRate(val power: Double, threshold: Long = 0, objectsThreshol
     if (time < threshold || processedObjects < objectsThreshold) 0L
     else time.toDouble().pow(power).roundToLong()
   }) {
-  override var measurementUnit = "(ms)^$power / second"
+  override var measurementUnit = "(ms)^$power / sec"
   }
 
 

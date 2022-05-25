@@ -23,10 +23,7 @@
  */
 package org.jetbrains.projector.awt.stats
 
-import org.jetbrains.projector.awt.stats.metrics.Average
-import org.jetbrains.projector.awt.stats.metrics.Metric
-import org.jetbrains.projector.awt.stats.metrics.PeakRate
-import org.jetbrains.projector.awt.stats.metrics.PowerPunishingRate
+import org.jetbrains.projector.awt.stats.metrics.*
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,21 +31,14 @@ object CreateUpdateStats : TopLevelTimeStats("Create update loop") {
   val CreateDataStats = TimeStats("Create data to send")
 
   override val metrics = listOf(
-    Average(),
-    Average(objectsThreshold = 1),
+    EventFrequency(10),
+    EventFrequency(30),
     PeakRate(),
-    PeakRate(3),
-    PeakRate(5),
     PeakRate(10),
     PeakRate(20),
-    PeakRate(3, 2),
+    PeakRate(40),
     PeakRate(5, 2),
-    PeakRate(3, 3),
-    PeakRate(5, 3),
-    PowerPunishingRate(1.2, 3),
-    PowerPunishingRate(1.2, 5),
-    PowerPunishingRate(1.5, 5),
-    PowerPunishingRate(2.0, 5)
+    PowerPunishingRate(1.2, 20),
   )
 
   override val plottingFileName = "outputStats/createUpdateForPlotting.csv"
