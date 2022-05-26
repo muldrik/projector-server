@@ -38,6 +38,11 @@ import org.jetbrains.projector.awt.image.PVolatileImage
 import org.jetbrains.projector.awt.peer.PDesktopPeer
 import org.jetbrains.projector.awt.peer.PMouseInfoPeer
 import org.jetbrains.projector.awt.peer.base.PComponentPeerBase
+import org.jetbrains.projector.awt.stats.CreateUpdateStats
+import org.jetbrains.projector.awt.stats.CreateUpdateStats.CreateDataStats
+import org.jetbrains.projector.awt.stats.MemoryStats
+import org.jetbrains.projector.awt.stats.NetworkStats
+import org.jetbrains.projector.awt.stats.ServerStats
 import org.jetbrains.projector.common.misc.Do
 import org.jetbrains.projector.common.protocol.data.ImageData
 import org.jetbrains.projector.common.protocol.data.ImageId
@@ -233,23 +238,32 @@ class ProjectorServer private constructor(
     logger.debug { "Daemon thread starts" }
     while (!Thread.currentThread().isInterrupted) {
       try {
+        CreateUpdateStats.startMeasurement()
+
+        CreateDataStats.startMeasurement()
         val dataToSend = createDataToSend()  // creating data even if there are no clients to avoid memory leaks
-        sendPictures(dataToSend)
+        CreateUpdateStats.addMeasurement(CreateDataStats.endMeasurement())
 
-        dataToSend
-          .distinctUpdatedOnscreenSurfaces()
-          .map { it to listOf(Flush) }
-          // don't call SwingUtilities.invokeLater when unneeded. also, we shouldn't touch EDT too early because it's overridden by IJ and
-          // this results in multiple EDT living at the same time, creating nasty exceptions like "no ComponentUI class for":
-          .takeIf { it.isNotEmpty() }
-          ?.let {
-            SwingUtilities.invokeLater {
-              // create FLUSH commands: we can flush for sure when no other painting is in progress,
-              // and seems like it's when all operations in EDT are finished and a new one is started
-              ProjectorDrawEventQueue.commands.addAll(it)
+        CreateUpdateStats.simpleMeasure("Send pictures") {
+          sendPictures(dataToSend)
+        }
+
+        CreateUpdateStats.simpleMeasure("Cleanup") {
+          dataToSend
+            .distinctUpdatedOnscreenSurfaces()
+            .map { it to listOf(Flush) }
+            // don't call SwingUtilities.invokeLater when unneeded. also, we shouldn't touch EDT too early because it's overridden by IJ and
+            // this results in multiple EDT living at the same time, creating nasty exceptions like "no ComponentUI class for":
+            .takeIf { it.isNotEmpty() }
+            ?.let {
+              SwingUtilities.invokeLater {
+                // create FLUSH commands: we can flush for sure when no other painting is in progress,
+                // and seems like it's when all operations in EDT are finished and a new one is started
+                ProjectorDrawEventQueue.commands.addAll(it)
+              }
             }
-          }
-
+        }
+        val res = CreateUpdateStats.endMeasurement(dataToSend.size)
         sleep(10)
       }
       catch (ex: InterruptedException) {
@@ -268,75 +282,82 @@ class ProjectorServer private constructor(
 
   @OptIn(ExperimentalStdlibApi::class)
   private fun createDataToSend(): List<ServerEvent> {
-    val clipboardEvent = when (isAgent) {
-      false -> PClipboard.extractLastContents()?.toServerClipboardEvent().let(::listOfNotNull)
-      true -> {
-        val systemClipboard = Toolkit.getDefaultToolkit().systemClipboard
-        val clipboardEvent = try {
-          systemClipboard.getContents(null)
-        }
-        catch (e: IllegalStateException) {
-          null  // https://youtrack.jetbrains.com/issue/PRJ-744
-        }?.toServerClipboardEvent()
+    val clipboardEvent: List<ServerClipboardEvent>
+    CreateDataStats.simpleMeasure("Clipboard event") {
+      clipboardEvent = when (isAgent) {
+        false -> PClipboard.extractLastContents()?.toServerClipboardEvent().let(::listOfNotNull)
+        true -> {
+          val systemClipboard = Toolkit.getDefaultToolkit().systemClipboard
+          val clipboardEvent = try {
+            systemClipboard.getContents(null)
+          }
+          catch (e: IllegalStateException) {
+            null  // https://youtrack.jetbrains.com/issue/PRJ-744
+          }?.toServerClipboardEvent()
 
-        if (isClipboardChanged(clipboardEvent)) {
-          lastClipboardEvent = clipboardEvent
-          clipboardEvent.let(::listOfNotNull)
-        }
-        else {
-          emptyList()
+          if (isClipboardChanged(clipboardEvent)) {
+            lastClipboardEvent = clipboardEvent
+            clipboardEvent.let(::listOfNotNull)
+          }
+          else {
+            emptyList()
+          }
         }
       }
     }
 
-    calculateMainWindowShift()
+    CreateDataStats.simpleMeasure("Calculate main window shift") { calculateMainWindowShift() }
 
-    val drawCommands = extractData(ProjectorDrawEventQueue.commands).shrinkEvents()
+    val allEvents: List<ServerEvent>
 
-    val windows = PWindow.windows
-      .mapIndexed { i, window ->
-        WindowData(
-          id = window.id,
-          title = window.title,
-          icons = window.icons?.map { it as ImageId },
-          isShowing = window.target.isShowing,
-          zOrder = i,
-          bounds = window.target.shiftBounds(PGraphicsEnvironment.defaultDevice.clientShift),
-          headerHeight = window.headerHeight,
-          cursorType = window.cursor?.type?.toCursorType(),
-          resizable = window.resizable,
-          modal = window.modal,
-          undecorated = window.undecorated,
-          windowType = window.windowType,
-          windowClass = window.windowClass,
-          isAutoRequestFocus = window.isAutoRequestFocus,
-          isAlwaysOnTop = window.isAlwaysOnTop,
-          parentId = window.parentWindow?.id,
-          renderingScale = window.renderingScale
-        )
+    CreateDataStats.simpleMeasure("Extract data") {
+      val drawCommands = extractData(ProjectorDrawEventQueue.commands).shrinkEvents()
+
+      val windows = PWindow.windows
+        .mapIndexed { i, window ->
+          WindowData(
+            id = window.id,
+            title = window.title,
+            icons = window.icons?.map { it as ImageId },
+            isShowing = window.target.isShowing,
+            zOrder = i,
+            bounds = window.target.shiftBounds(PGraphicsEnvironment.defaultDevice.clientShift),
+            headerHeight = window.headerHeight,
+            cursorType = window.cursor?.type?.toCursorType(),
+            resizable = window.resizable,
+            modal = window.modal,
+            undecorated = window.undecorated,
+            windowType = window.windowType,
+            windowClass = window.windowClass,
+            isAutoRequestFocus = window.isAutoRequestFocus,
+            isAlwaysOnTop = window.isAlwaysOnTop,
+            parentId = window.parentWindow?.id,
+            renderingScale = window.renderingScale
+          )
+        }
+
+      val windowSetChangedEvent = when {
+        areChangedWindows(windows) -> listOf(ServerWindowSetChangedEvent(windows))
+        else -> emptyList()
       }
 
-    val windowSetChangedEvent = when {
-      areChangedWindows(windows) -> listOf(ServerWindowSetChangedEvent(windows))
-      else -> emptyList()
+      val newImagesCopy = extractData(ProjectorImageCacher.newImages)
+
+      val commonEvents = extractData(commonQueue)
+
+      val commandsCount = commonEvents.size + newImagesCopy.size + clipboardEvent.size + drawCommands.size + windowSetChangedEvent.size + 1
+
+      allEvents = buildList(commandsCount) {
+        addAll(commonEvents)
+        addAll(newImagesCopy)
+        addAll(clipboardEvent)
+        addAll(drawCommands)
+        addAll(windowSetChangedEvent)
+        windowColorsEvent?.let { add(it); windowColorsEvent = null }
+      }
     }
 
-    val newImagesCopy = extractData(ProjectorImageCacher.newImages)
-
-    val commonEvents = extractData(commonQueue)
-
-    val commandsCount = commonEvents.size + newImagesCopy.size + clipboardEvent.size + drawCommands.size + windowSetChangedEvent.size + 1
-
-    val allEvents = buildList(commandsCount) {
-      addAll(commonEvents)
-      addAll(newImagesCopy)
-      addAll(clipboardEvent)
-      addAll(drawCommands)
-      addAll(windowSetChangedEvent)
-      windowColorsEvent?.let { add(it); windowColorsEvent = null }
-    }
-
-    ProjectorImageCacher.collectGarbage()
+    CreateDataStats.simpleMeasure("Collect Garbage") { ProjectorImageCacher.collectGarbage() }
 
     return allEvents
   }
@@ -697,7 +718,7 @@ class ProjectorServer private constructor(
           val encoded = toClientMessageEncoder.encode(message)
           toClientMessageCompressor.compress(encoded)
         }
-
+        NetworkStats.add(ServerStats.getTimestampFromStart(), compressed.size.toLong());
         client.send(compressed)
       }
     }
@@ -717,6 +738,8 @@ class ProjectorServer private constructor(
   }
 
   fun start() {
+    MemoryStats.startMemoryStatsCollector()
+    ServerStats.setStatsDumpCountdown()
     updateThread = createUpdateThread()
     caretInfoUpdater.start()
 

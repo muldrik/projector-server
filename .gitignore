@@ -9,3 +9,7 @@ build/
 out/
 local.properties
 pluginVersions.txt
+.gitignore
+*.log
+projector-server/outputStats/*.txt
+projector-server/outputStats/*.csv

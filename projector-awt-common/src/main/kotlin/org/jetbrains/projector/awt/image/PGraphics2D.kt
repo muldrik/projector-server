@@ -32,6 +32,8 @@ import org.jetbrains.projector.awt.font.PFontManager
 import org.jetbrains.projector.awt.service.Defaults
 import org.jetbrains.projector.awt.service.DrawEventQueue
 import org.jetbrains.projector.awt.service.ImageCacher
+import org.jetbrains.projector.awt.stats.AwtStats
+import org.jetbrains.projector.awt.stats.ServerStats
 import org.jetbrains.projector.util.logging.Logger
 import sun.font.FontDesignMetrics
 import sun.java2d.NullSurfaceData
@@ -51,6 +53,9 @@ import java.awt.image.RenderedImage
 import java.awt.image.renderable.RenderableImage
 import java.text.AttributedCharacterIterator
 import javax.swing.UIManager
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
+
 
 class PGraphics2D private constructor(
   val drawEventQueue: DrawEventQueue,
@@ -82,11 +87,11 @@ class PGraphics2D private constructor(
       return field
     }
 
-  private inline fun paintPlain(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) {
+  private inline fun paintPlain(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) = AwtStats.standaloneSimpleMeasure("Paint plain") {
     drawEventQueue.buildCommand().command()
   }
 
-  private inline fun paintShape(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) {
+  private inline fun paintShape(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) = AwtStats.standaloneSimpleMeasure("Paint shape") {
     drawEventQueue
       .buildCommand()
       .setClip(identitySpaceClip = identitySpaceClip)
@@ -97,7 +102,7 @@ class PGraphics2D private constructor(
       .command()
   }
 
-  private inline fun paintArea(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) {
+  private inline fun paintArea(crossinline command: DrawEventQueue.CommandBuilder.() -> Unit) = AwtStats.standaloneSimpleMeasure("Paint area") {
     drawEventQueue
       .buildCommand()
       .setClip(identitySpaceClip = identitySpaceClip)
@@ -106,9 +111,9 @@ class PGraphics2D private constructor(
       .command()
   }
 
-  private fun paintString(str: String, x: Double, y: Double) {
+  private fun paintString(str: String, x: Double, y: Double) = AwtStats.standaloneSimpleMeasure("Paint string") {
     if (str.isBlank()) {
-      return
+      return@standaloneSimpleMeasure
     }
 
     val metrics = FontDesignMetrics.getMetrics(font, backingFontRenderContext)
@@ -182,11 +187,13 @@ class PGraphics2D private constructor(
     )
   }
 
+
+
   override fun draw(s: Shape) {
     paintShape(AwtPaintType.DRAW, s)
   }
 
-  override fun drawRenderedImage(img: RenderedImage, xform: AffineTransform?) {
+  override fun drawRenderedImage(img: RenderedImage, xform: AffineTransform?)  {
     // xform nullability is required for compatibility, so provide a default (identity) transformation
     val xFormOrDefault = xform ?: AffineTransform()
 
@@ -212,7 +219,7 @@ class PGraphics2D private constructor(
     paintString(str, x = x.toDouble(), y = y.toDouble())
   }
 
-  override fun drawString(iterator: AttributedCharacterIterator, x: Int, y: Int) {
+  override fun drawString(iterator: AttributedCharacterIterator, x: Int, y: Int)  {
     drawString(iterator, x = x.toFloat(), y = y.toFloat())
   }
 
@@ -223,12 +230,12 @@ class PGraphics2D private constructor(
     }
   }
 
-  override fun drawGlyphVector(g: GlyphVector, x: Float, y: Float) {
+  override fun drawGlyphVector(g: GlyphVector, x: Float, y: Float) = AwtStats.standaloneSimpleMeasure("drawGlyphVector") {
     val shape = g.getOutline(x, y)
     fill(shape)
   }
 
-  private fun paintShape(paintType: AwtPaintType, shape: Shape) {
+  private fun paintShape(paintType: AwtPaintType, shape: Shape) = AwtStats.standaloneSimpleMeasure("Paint shape") {
     when (shape) {
       is Rectangle2D -> addPaintRectCommand(paintType, shape.x, shape.y, shape.width, shape.height)
 
@@ -440,7 +447,7 @@ class PGraphics2D private constructor(
     clip = Rectangle(x, y, w, h)
   }
 
-  private fun Shape.untransformShape(): Shape {
+  private fun Shape.untransformShape(): Shape  {
     return this.transformShape(transform.createInverse())
   }
 
@@ -678,14 +685,14 @@ class PGraphics2D private constructor(
 
   private fun paintPolygon(paintType: AwtPaintType, xPoints: IntArray, yPoints: IntArray, nPoints: Int) {
     if (nPoints <= 0) {
-      return
     }
-
-    paintShape {
-      paintPolygon(
-        paintType = paintType,
-        points = xPoints.take(nPoints).zip(yPoints.take(nPoints))
-      )
+    else {
+      paintShape {
+        paintPolygon(
+          paintType = paintType,
+          points = xPoints.take(nPoints).zip(yPoints.take(nPoints))
+        )
+      }
     }
   }
 
@@ -765,10 +772,11 @@ class PGraphics2D private constructor(
     if (img == null) {
       return true  // java doc for all image methods: methods just return true if the img is null
     }
+    else {
+      paintArea { drawImage(imageId = ImageCacher.instance.getImageId(img, methodName), awtImageInfo = awtImageInfo) }
 
-    paintArea { drawImage(imageId = ImageCacher.instance.getImageId(img, methodName), awtImageInfo = awtImageInfo) }
-
-    return true
+      return true
+    }
   }
 
   override fun dispose() {
